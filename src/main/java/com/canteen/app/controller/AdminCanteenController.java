@@ -19,10 +19,14 @@ public class AdminCanteenController {
 
     private final OrderService orderService;
     private final MenuService menuService;
+    private final com.canteen.app.service.RazorpayService razorpayService;
 
-    public AdminCanteenController(OrderService orderService, MenuService menuService) {
+    public AdminCanteenController(OrderService orderService,
+                                  MenuService menuService,
+                                  com.canteen.app.service.RazorpayService razorpayService) {
         this.orderService = orderService;
         this.menuService = menuService;
+        this.razorpayService = razorpayService;
     }
 
     /**
@@ -54,8 +58,31 @@ public class AdminCanteenController {
         model.addAttribute("stats", stats);
         model.addAttribute("statusFilter", statusFilter);
         model.addAttribute("allStatuses", OrderStatus.values());
+        model.addAttribute("razorpayKeyId", razorpayService.getKeyId());
+        model.addAttribute("isRazorpayLive", razorpayService.isLiveMode());
 
         return "admin/dashboard";
+    }
+
+    /**
+     * Update Razorpay Live / Test Credentials dynamically
+     */
+    @PostMapping("/settings/razorpay")
+    public String updateRazorpaySettings(@RequestParam("keyId") String keyId,
+                                         @RequestParam("keySecret") String keySecret,
+                                         jakarta.servlet.http.HttpSession session,
+                                         RedirectAttributes redirectAttributes) {
+        if (!Boolean.TRUE.equals(session.getAttribute("isStaffAuthenticated"))) {
+            return "redirect:/canteen/login";
+        }
+
+        razorpayService.updateCredentials(keyId, keySecret);
+        if (razorpayService.isLiveMode()) {
+            redirectAttributes.addFlashAttribute("successMessage", "Razorpay switched to LIVE PRODUCTION mode! Payments will credit real bank account with instant settlement.");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Razorpay credentials updated in TEST mode.");
+        }
+        return "redirect:/canteen/admin/dashboard";
     }
 
     /**

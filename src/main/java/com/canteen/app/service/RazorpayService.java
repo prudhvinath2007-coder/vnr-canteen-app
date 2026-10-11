@@ -102,10 +102,12 @@ public class RazorpayService {
             return false;
         }
 
-        // Test / demo mode signature bypass for seamless sandbox testing
-        if ("demo_verified".equalsIgnoreCase(signature) || paymentId.startsWith("pay_demo_") || paymentId.startsWith("pay_test_")) {
-            log.info("Payment verified in demo/test mode: {}", paymentId);
-            return true;
+        // Test / demo mode signature bypass ONLY allowed when NOT in Live mode
+        if (!isLiveMode()) {
+            if ("demo_verified".equalsIgnoreCase(signature) || paymentId.startsWith("pay_demo_") || paymentId.startsWith("pay_test_")) {
+                log.info("Payment verified in demo/test mode: {}", paymentId);
+                return true;
+            }
         }
 
         if (orderId == null || signature == null) {
@@ -138,6 +140,26 @@ public class RazorpayService {
             log.error("Error verifying Razorpay signature: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Checks if Razorpay is configured with a live production key
+     */
+    public boolean isLiveMode() {
+        return keyId != null && keyId.trim().startsWith("rzp_live_");
+    }
+
+    /**
+     * Dynamically updates Razorpay API credentials
+     */
+    public synchronized void updateCredentials(String newKeyId, String newKeySecret) {
+        if (newKeyId != null && !newKeyId.isBlank()) {
+            this.keyId = newKeyId.trim();
+        }
+        if (newKeySecret != null && !newKeySecret.isBlank()) {
+            this.keySecret = newKeySecret.trim();
+        }
+        log.info("Razorpay credentials updated. Live mode: {}", isLiveMode());
     }
 
     /**

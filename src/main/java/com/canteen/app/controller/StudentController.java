@@ -196,6 +196,7 @@ public class StudentController {
         model.addAttribute("razorpayOrderId", rzpOrder.get("orderId"));
         model.addAttribute("razorpayAmountPaise", rzpOrder.get("amount"));
         model.addAttribute("companyName", razorpayService.getCompanyName());
+        model.addAttribute("isRazorpayLive", razorpayService.isLiveMode());
 
         return "student/checkout";
     }

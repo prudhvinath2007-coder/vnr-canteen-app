@@ -256,7 +256,8 @@
                                     <div class="p-3 bg-primary-subtle bg-opacity-25 rounded-4 border border-primary-subtle mb-3 text-start">
                                         <div class="d-flex align-items-center justify-content-between mb-2">
                                             <div>
-                                                <span class="badge bg-primary text-white rounded-pill px-2 py-0 me-1" style="font-size: 0.68rem;">LIVE SDK</span>
+                                                <span th:if="${isRazorpayLive}" class="badge bg-success text-white rounded-pill px-2 py-0 me-1" style="font-size: 0.68rem;">LIVE MODE</span>
+                                                <span th:if="${!isRazorpayLive}" class="badge bg-primary text-white rounded-pill px-2 py-0 me-1" style="font-size: 0.68rem;">LIVE SDK</span>
                                                 <span class="small fw-bold text-dark">Order ID: </span>
                                                 <span class="small font-monospace text-primary fw-bold" th:text="${razorpayOrderId}">order_xxx</span>
                                             </div>
@@ -267,10 +268,13 @@
                                             <span>Open Razorpay Modal & Pay ₹<span th:text="${cartTotal}">0</span></span>
                                         </button>
                                         <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
-                                            <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-shield-check text-success me-1"></i>Instant Swiggy confirmation</span>
-                                            <button type="button" class="btn btn-link p-0 text-decoration-none" style="font-size: 0.72rem;" onclick="simulateRazorpaySuccess()">
+                                            <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-shield-check text-success me-1"></i>Real-time bank verification</span>
+                                            <button th:if="${!isRazorpayLive}" type="button" class="btn btn-link p-0 text-decoration-none" style="font-size: 0.72rem;" onclick="simulateRazorpaySuccess()">
                                                 <i class="bi bi-magic me-1"></i>Quick Test Verify
                                             </button>
+                                            <span th:if="${isRazorpayLive}" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" style="font-size: 0.68rem;">
+                                                <i class="bi bi-patch-check-fill me-1"></i> Direct Bank Settlement
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
