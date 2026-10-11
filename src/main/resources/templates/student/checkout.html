@@ -194,7 +194,7 @@
                                 <input type="hidden" id="rawUpiUri" th:value="${upiUri}">
                                 <input type="hidden" id="cartTotalVal" th:value="${cartTotal}">
                                 <input type="hidden" id="selectedPaymentMethodInput" th:field="*{paymentMethod}" value="UPI">
-                                <input type="hidden" id="selectedVpaInput" th:field="*{selectedVpa}" value="BHARATHPE2LOUOH4C3E50129@unitype">
+                                <input type="hidden" id="selectedVpaInput" th:field="*{selectedVpa}" value="BHARATPE2L0U0H4C3E50129@unitype">
 
                                 <!-- Payment Tabs: UPI vs Cash at Counter -->
                                 <ul class="nav nav-pills nav-fill mb-3 bg-light p-1 rounded-3 small fw-bold" id="paymentTabs" role="tablist">
@@ -225,7 +225,7 @@
                                         <div class="d-flex justify-content-between align-items-center bg-white p-2 px-3 rounded-3 border">
                                             <div class="me-2 text-truncate">
                                                 <small class="text-muted d-block fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">CANTEEN UPI ID</small>
-                                                <span class="fw-bold font-monospace text-dark text-break fs-6" id="canteenUpiIdText">BHARATHPE2LOUOH4C3E50129@unitype</span>
+                                                <span class="fw-bold font-monospace text-dark text-break fs-6" id="canteenUpiIdText">BHARATPE2L0U0H4C3E50129@unitype</span>
                                             </div>
                                             <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 flex-shrink-0" onclick="copyUpiId()" title="Copy UPI ID">
                                                 <i class="bi bi-clipboard me-1"></i> <span id="copyBtnText">Copy</span>
@@ -291,7 +291,7 @@
                                     <div class="bg-light rounded-3 p-3 text-start small mb-3 border">
                                         <div class="d-flex justify-content-between align-items-center py-1">
                                             <span class="text-muted">Payee UPI ID:</span>
-                                            <span class="fw-bold font-monospace text-danger text-break">BHARATHPE2LOUOH4C3E50129@unitype</span>
+                                            <span class="fw-bold font-monospace text-danger text-break">BHARATPE2L0U0H4C3E50129@unitype</span>
                                         </div>
                                         <div class="d-flex justify-content-between py-1">
                                             <span class="text-muted">Payee Name:</span>
@@ -368,7 +368,7 @@
                     <div class="text-muted small mb-0" style="font-size: 0.75rem;">AMOUNT CONFIRMED</div>
                     <div class="fs-2 fw-bolder text-success lh-1 mb-1" id="overlayAmountDisplay" th:text="'₹' + ${cartTotal}">₹0.00</div>
                     <div class="small text-muted font-monospace" style="font-size: 0.72rem;">
-                        BharatPe: <strong class="text-dark">BHARATHPE2LOUOH4C3E50129@unitype</strong>
+                        BharatPe: <strong class="text-dark">BHARATPE2L0U0H4C3E50129@unitype</strong>
                     </div>
                 </div>
 
@@ -461,7 +461,7 @@
         }
 
         function copyUpiId() {
-            const text = 'BHARATHPE2LOUOH4C3E50129@unitype';
+            const text = 'BHARATPE2L0U0H4C3E50129@unitype';
             const copyBtnText = document.getElementById('copyBtnText');
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(text).then(() => {

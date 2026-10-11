@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class UpiPaymentService {
 
-    @Value("${canteen.upi.id:BHARATHPE2LOUOH4C3E50129@unitype}")
+    @Value("${canteen.upi.id:BHARATPE2L0U0H4C3E50129@unitype}")
     private String upiId;
 
     @Value("${canteen.upi.name:VNR VJIET Canteen}")
@@ -43,11 +43,11 @@ public class UpiPaymentService {
     }
 
     /**
-     * Builds standard NPCI UPI URI string for BharatPe Merchant VPA BHARATHPE2LOUOH4C3E50129@unitype
+     * Builds standard NPCI UPI URI string for BharatPe Merchant VPA BHARATPE2L0U0H4C3E50129@unitype
      */
     public String generateUpiUri(String customVpa, String orderNumber, BigDecimal amount) {
         String formattedAmount = (amount != null) ? String.format("%.2f", amount) : "0.00";
-        String cleanUpi = (customVpa != null && !customVpa.isBlank()) ? customVpa.trim() : (upiId != null ? upiId.trim() : "BHARATHPE2LOUOH4C3E50129@unitype");
+        String cleanUpi = (customVpa != null && !customVpa.isBlank()) ? customVpa.trim() : (upiId != null ? upiId.trim() : "BHARATPE2L0U0H4C3E50129@unitype");
         String cleanName = (payeeName != null) ? payeeName.trim() : "VNR VJIET Canteen";
 
         // Clean universal NPCI standard format
