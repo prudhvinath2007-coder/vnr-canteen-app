@@ -42,6 +42,15 @@ public class Payment {
     @Column(name = "QR_BASE64", length = 4000)
     private String qrBase64;
 
+    @Column(name = "RAZORPAY_ORDER_ID", length = 100)
+    private String razorpayOrderId;
+
+    @Column(name = "RAZORPAY_PAYMENT_ID", length = 100)
+    private String razorpayPaymentId;
+
+    @Column(name = "RAZORPAY_SIGNATURE", length = 255)
+    private String razorpaySignature;
+
     public Payment() {}
 
     public Long getId() {
@@ -114,5 +123,29 @@ public class Payment {
 
     public void setQrBase64(String qrBase64) {
         this.qrBase64 = qrBase64;
+    }
+
+    public String getRazorpayOrderId() {
+        return razorpayOrderId;
+    }
+
+    public void setRazorpayOrderId(String razorpayOrderId) {
+        this.razorpayOrderId = razorpayOrderId;
+    }
+
+    public String getRazorpayPaymentId() {
+        return razorpayPaymentId;
+    }
+
+    public void setRazorpayPaymentId(String razorpayPaymentId) {
+        this.razorpayPaymentId = razorpayPaymentId;
+    }
+
+    public String getRazorpaySignature() {
+        return razorpaySignature;
+    }
+
+    public void setRazorpaySignature(String razorpaySignature) {
+        this.razorpaySignature = razorpaySignature;
     }
 }

@@ -17,10 +17,40 @@ public class OrderApiController {
 
     private final OrderService orderService;
     private final UpiPaymentService upiPaymentService;
+    private final com.canteen.app.service.RazorpayService razorpayService;
 
-    public OrderApiController(OrderService orderService, UpiPaymentService upiPaymentService) {
+    public OrderApiController(OrderService orderService,
+                              UpiPaymentService upiPaymentService,
+                              com.canteen.app.service.RazorpayService razorpayService) {
         this.orderService = orderService;
         this.upiPaymentService = upiPaymentService;
+        this.razorpayService = razorpayService;
+    }
+
+    /**
+     * Create Razorpay Order
+     */
+    @PostMapping("/razorpay/create-order")
+    public ResponseEntity<?> createRazorpayOrder(@RequestParam("amount") BigDecimal amount) {
+        Map<String, Object> orderData = razorpayService.createOrder(amount, "API_" + System.currentTimeMillis());
+        return ResponseEntity.ok(orderData);
+    }
+
+    /**
+     * Verify Razorpay Payment Signature
+     */
+    @PostMapping("/razorpay/verify")
+    public ResponseEntity<?> verifyRazorpayPayment(@RequestBody Map<String, String> payload) {
+        String orderId = payload.get("razorpay_order_id");
+        String paymentId = payload.get("razorpay_payment_id");
+        String signature = payload.get("razorpay_signature");
+
+        boolean verified = razorpayService.verifyPaymentSignature(orderId, paymentId, signature);
+        return ResponseEntity.ok(Map.of(
+                "verified", verified,
+                "paymentId", paymentId != null ? paymentId : "",
+                "message", verified ? "Payment verified successfully" : "Payment signature verification failed"
+        ));
     }
 
     /**

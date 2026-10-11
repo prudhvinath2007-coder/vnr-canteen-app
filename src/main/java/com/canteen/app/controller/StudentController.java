@@ -5,6 +5,7 @@ import com.canteen.app.dto.OrderRequestDto;
 import com.canteen.app.model.*;
 import com.canteen.app.service.MenuService;
 import com.canteen.app.service.OrderService;
+import com.canteen.app.service.RazorpayService;
 import com.canteen.app.service.UpiPaymentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -22,13 +23,16 @@ public class StudentController {
     private final MenuService menuService;
     private final OrderService orderService;
     private final UpiPaymentService upiPaymentService;
+    private final RazorpayService razorpayService;
 
     public StudentController(MenuService menuService,
                              OrderService orderService,
-                             UpiPaymentService upiPaymentService) {
+                             UpiPaymentService upiPaymentService,
+                             RazorpayService razorpayService) {
         this.menuService = menuService;
         this.orderService = orderService;
         this.upiPaymentService = upiPaymentService;
+        this.razorpayService = razorpayService;
     }
 
     @SuppressWarnings("unchecked")
@@ -179,6 +183,7 @@ public class StudentController {
             if (sessRoll != null) orderRequest.setRollNumber(sessRoll);
         }
 
+        Map<String, Object> rzpOrder = razorpayService.createOrder(total, "VNR_" + System.currentTimeMillis());
         model.addAttribute("cartItems", new ArrayList<>(cart.values()));
         model.addAttribute("cartTotal", total);
         model.addAttribute("cartItemCount", getCartItemCount(cart));
@@ -187,6 +192,10 @@ public class StudentController {
         model.addAttribute("payeeName", upiPaymentService.getPayeeName());
         model.addAttribute("upiQrCode", qrBase64);
         model.addAttribute("upiUri", upiUri);
+        model.addAttribute("razorpayKeyId", razorpayService.getKeyId());
+        model.addAttribute("razorpayOrderId", rzpOrder.get("orderId"));
+        model.addAttribute("razorpayAmountPaise", rzpOrder.get("amount"));
+        model.addAttribute("companyName", razorpayService.getCompanyName());
 
         return "student/checkout";
     }
@@ -205,6 +214,19 @@ public class StudentController {
         }
 
         try {
+            // Verify Razorpay payment signature if paid via Razorpay
+            if ("RAZORPAY".equalsIgnoreCase(orderRequest.getPaymentMethod())) {
+                boolean verified = razorpayService.verifyPaymentSignature(
+                        orderRequest.getRazorpayOrderId(),
+                        orderRequest.getRazorpayPaymentId(),
+                        orderRequest.getRazorpaySignature()
+                );
+                if (!verified) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Payment verification failed. Invalid Razorpay signature.");
+                    return "redirect:/student/checkout";
+                }
+            }
+
             User loggedStudent = (User) session.getAttribute("loggedInStudent");
             if (loggedStudent != null && (orderRequest.getRollNumber() == null || orderRequest.getRollNumber().isBlank())) {
                 orderRequest.setRollNumber(loggedStudent.getRollNumber());

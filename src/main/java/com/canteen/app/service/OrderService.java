@@ -21,6 +21,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final UpiPaymentService upiPaymentService;
+    private final RazorpayService razorpayService;
     private final NotificationService notificationService;
 
     // Daily token generator counter
@@ -29,10 +30,12 @@ public class OrderService {
     public OrderService(OrderRepository orderRepository,
                         MenuItemRepository menuItemRepository,
                         UpiPaymentService upiPaymentService,
+                        RazorpayService razorpayService,
                         NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.menuItemRepository = menuItemRepository;
         this.upiPaymentService = upiPaymentService;
+        this.razorpayService = razorpayService;
         this.notificationService = notificationService;
 
         // Initialize token counter from existing records
@@ -89,8 +92,12 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Generate and record UPI payment details
-        upiPaymentService.createPaymentForOrder(savedOrder, orderRequest.getUpiTransactionId());
+        // Record payment details based on method
+        if ("RAZORPAY".equalsIgnoreCase(orderRequest.getPaymentMethod())) {
+            razorpayService.recordRazorpayPayment(savedOrder, orderRequest);
+        } else {
+            upiPaymentService.createPaymentForOrder(savedOrder, orderRequest.getUpiTransactionId());
+        }
 
         // Dispatch customized Swiggy-style notification to student
         String orderTitle = "🍕 Order Confirmed! (Token #" + savedOrder.getTokenNumber() + ")";

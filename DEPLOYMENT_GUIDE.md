@@ -71,21 +71,15 @@ Oracle Cloud provides **Always Free** resources with:
 
 ---
 
-## 📱 Android App Setup & Direct APK Download
+## 💳 Razorpay & UPI Payment Gateway Setup
 
-### Method 1: Direct APK Download from Web App
-1. Open the web app on any Android device.
-2. Tap the **"App"** pill in the top navigation or visit `http://<domain>/download-app`.
-3. Tap **"Download APK"** or scan the QR code from another device.
-4. Open the downloaded `VNR-VJIET-Canteen.apk` and tap **Install** (allow unknown sources if prompted).
-5. The native app will launch with 1-tap UPI integration directly to `6301599722@mbkns` via PhonePe, Paytm & Google Pay!
+The application supports **Razorpay Payment Gateway SDK** with automated cryptographic HMAC-SHA256 signature verification and Swiggy-style confirmation:
+- Set environment variables `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in your hosting dashboard (e.g., Render Environment tab).
+- Test keys are configured by default for instant local & staging payments.
+- Supports all UPI apps (PhonePe, Google Pay, Paytm, Cred, BHIM), debit/credit cards, and NetBanking.
+- Also supports direct UPI payments to payee ID: `BHARATPE2L0U0H4C3E50129@unitype`.
 
-### Method 2: Instant PWA Install (No APK download required!)
-1. Open your live hosted URL (e.g. `https://vnr-vjiet-canteen.onrender.com/student`) on any Android phone in Chrome or Edge.
-2. Tap **"Install VNR Canteen App"** on the banner or from the browser menu.
-3. The app installs directly onto the home screen as a standalone application.
-
-### Method 3: Build Custom APK in Android Studio
+### Optional: Android WebView Wrapper Setup
 The source code is located in:
 ```
 /Users/srishanthmulupoju/Downloads/Canteennproject/android-app/
