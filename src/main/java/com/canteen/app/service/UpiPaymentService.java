@@ -35,22 +35,20 @@ public class UpiPaymentService {
     }
 
     /**
-     * Builds standard NPCI UPI URI string
-     * format: upi://pay?pa=...&pn=...&am=...&cu=INR&tn=...&tr=...
+     * Builds standard NPCI UPI URI string accepted by all Indian UPI apps (PhonePe, Paytm, GPay, BHIM)
+     * Note: 'pa' must contain literal '@' (NOT %40 URL-encoded), and no 'tr' merchant ref for personal VPAs.
      */
     public String generateUpiUri(String orderNumber, BigDecimal amount) {
-        String formattedAmount = String.format("%.2f", amount);
-        String note = "Canteen Order " + orderNumber;
-        String transactionRef = "TXN" + System.currentTimeMillis();
+        String formattedAmount = (amount != null) ? String.format("%.2f", amount) : "0.00";
+        String cleanUpi = (upiId != null) ? upiId.trim() : "6301599722@mbkns";
+        String cleanName = (payeeName != null) ? payeeName.trim() : "VNR VJIET Canteen";
 
-        return String.format(
-                "upi://pay?pa=%s&pn=%s&am=%s&cu=INR&tn=%s&tr=%s",
-                urlEncode(upiId),
-                urlEncode(payeeName),
-                formattedAmount,
-                urlEncode(note),
-                urlEncode(transactionRef)
-        );
+        // Clean universal NPCI standard format
+        return "upi://pay?pa=" + cleanUpi
+                + "&pn=" + urlEncode(cleanName)
+                + "&am=" + formattedAmount
+                + "&cu=INR"
+                + "&tn=" + urlEncode("VNR Canteen " + (orderNumber != null ? orderNumber : ""));
     }
 
     /**

@@ -165,8 +165,7 @@ public class StudentController {
         }
 
         BigDecimal total = getCartTotal(cart);
-        String dummyOrderNum = "TEMP-" + System.currentTimeMillis() % 10000;
-        String upiUri = upiPaymentService.generateUpiUri(dummyOrderNum, total);
+        String upiUri = upiPaymentService.generateUpiUri(null, total);
         String qrBase64 = upiPaymentService.generateUpiQrBase64(upiUri, 260, 260);
 
         OrderRequestDto orderRequest = new OrderRequestDto();
