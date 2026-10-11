@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu & Stock Management - Canteen Staff</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid px-3 px-lg-4">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/canteen/admin/dashboard}">
+                <i class="bi bi-fire text-warning fs-4"></i>
+                <span>Canteen Kitchen Dashboard</span>
+                <span class="badge bg-warning text-dark fw-bold">STAFF</span>
+            </a>
+            <div class="collapse navbar-collapse" id="adminMenuNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/canteen/admin/dashboard}"><i class="bi bi-kanban me-1"></i> Live Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" th:href="@{/canteen/admin/menu}"><i class="bi bi-egg-fried me-1"></i> Menu & Stock</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/canteen/admin/reports}"><i class="bi bi-graph-up-arrow me-1"></i> Sales & Reports</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-warning btn-sm rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                        <i class="bi bi-plus-circle me-1"></i> Add Dish
+                    </button>
+                    <a th:href="@{/portal}" class="btn btn-outline-light btn-sm rounded-pill px-3">Switch Role</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid px-3 px-lg-4 py-4">
+        <!-- Flash Alert -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2 mb-4" role="alert">
+            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+            <span class="small fw-semibold" th:text="${successMessage}"></span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-3 border-bottom gap-2">
+                <div>
+                    <h4 class="fw-bold mb-1 text-dark">Menu Catalog & Real-Time Stock Control</h4>
+                    <p class="text-muted small mb-0">Toggle stock switches instantly to prevent students from ordering dishes that have run out.</p>
+                </div>
+                <button class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <i class="bi bi-plus-lg me-1"></i> Add New Dish
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="table-light small text-muted">
+                        <tr>
+                            <th style="min-width: 200px;">Dish</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Prep Time</th>
+                            <th>Current Stock</th>
+                            <th class="text-end" style="min-width: 140px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}">
+                            <td>
+                                <div class="d-flex align-items-center gap-2 gap-md-3">
+                                    <img th:src="${item.imageUrl != null and !item.imageUrl.isEmpty()} ? ${item.imageUrl} : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'"
+                                         class="rounded-3 shadow-sm" style="width: 46px; height: 46px; min-width: 46px; object-fit: cover;" alt="item">
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-dark small" th:text="${item.name}">Dosa</h6>
+                                        <small class="text-muted text-truncate-1" style="max-width: 220px;" th:text="${item.description}">Description</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-secondary rounded-pill small" th:text="${item.category != null ? item.category.name : 'General'}">Category</span>
+                            </td>
+                            <td>
+                                <span th:if="${item.isVeg}" class="badge bg-success-subtle text-success rounded-pill small"><span class="veg-dot me-1"></span> Veg</span>
+                                <span th:unless="${item.isVeg}" class="badge bg-danger-subtle text-danger rounded-pill small"><span class="nonveg-dot me-1"></span> Non-Veg</span>
+                            </td>
+                            <td class="fw-bold text-dark small" th:text="'₹' + ${item.price}">₹60.00</td>
+                            <td class="small text-muted" th:text="${item.prepTimeMinutes} + 'm'">10m</td>
+                            <td>
+                                <span th:if="${item.isAvailable}" class="badge bg-success text-white rounded-pill px-3 py-1 small fw-bold">IN STOCK</span>
+                                <span th:unless="${item.isAvailable}" class="badge bg-danger text-white rounded-pill px-3 py-1 small fw-bold">OUT OF STOCK</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2 align-items-center">
+                                    <form th:action="@{/canteen/admin/menu/{id}/toggle(id=${item.id})}" method="post" class="m-0">
+                                        <button type="submit" class="btn btn-sm rounded-pill fw-semibold px-2 py-1" th:classappend="${item.isAvailable} ? 'btn-outline-danger' : 'btn-outline-success'" style="font-size: 0.75rem;">
+                                            <i class="bi" th:classappend="${item.isAvailable} ? 'bi-slash-circle me-1' : 'bi-check-circle me-1'"></i>
+                                            <span th:text="${item.isAvailable} ? 'Mark Out of Stock' : 'Mark In Stock'">Toggle</span>
+                                        </button>
+                                    </form>
+
+                                    <form th:action="@{/canteen/admin/menu/{id}/delete(id=${item.id})}" method="post" onsubmit="return confirm('Delete this menu item?');" class="m-0">
+                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete">
+                                            <i class="bi bi-trash3 fs-5"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Item Modal -->
+    <div class="modal fade" id="addItemModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <form th:action="@{/canteen/admin/menu/save}" method="post">
+                    <div class="modal-header border-bottom">
+                        <h5 class="modal-title fw-bold text-dark">Add New Dish</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark">Dish Name *</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Masala Dosa, Paneer Roll" required>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-bold text-dark">Category *</label>
+                                <select name="categoryId" class="form-select" required>
+                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-bold text-dark">Price (INR) *</label>
+                                <input type="number" step="0.50" name="price" class="form-control" placeholder="60.00" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-bold text-dark">Dietary Type *</label>
+                                <select name="isVeg" class="form-select">
+                                    <option value="true">Pure Vegetarian</option>
+                                    <option value="false">Non-Vegetarian</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-bold text-dark">Prep Time (Mins)</label>
+                                <input type="number" name="prepTimeMinutes" class="form-control" value="10">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark">Description</label>
+                            <textarea name="description" class="form-control" rows="2" placeholder="Briefly describe ingredients or accompaniments"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark">Image URL (Optional)</label>
+                            <input type="url" name="imageUrl" class="form-control" placeholder="https://images.unsplash.com/...">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top">
+                        <button type="button" class="btn btn-light rounded-pill px-3 small" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold">Save Dish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

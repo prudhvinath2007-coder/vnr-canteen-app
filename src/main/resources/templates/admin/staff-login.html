@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Verification - VNR VJIET Canteen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center min-vh-100 p-3">
+
+    <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white text-center" style="max-width: 440px; width: 100%;">
+        <!-- Header -->
+        <div class="rounded-circle bg-dark text-white mx-auto d-flex align-items-center justify-content-center mb-3 shadow" style="width: 68px; height: 68px;">
+            <i class="bi bi-shield-lock-fill fs-2 text-warning"></i>
+        </div>
+
+        <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-1 small fw-bold mb-2">VNR VJIET HYDERABAD</span>
+        <h4 class="fw-bold mb-1 text-dark">Canteen Staff Portal</h4>
+        <p class="text-muted small mb-4">Restricted to authorized kitchen staff and canteen operators. Enter staff passcode to proceed.</p>
+
+        <!-- Flash messages -->
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3 p-2 small border-0 text-start" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-1"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close p-2" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Passcode Form -->
+        <form th:action="@{/canteen/login}" method="post">
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold text-dark">Staff Access Code / Passcode</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-key-fill"></i></span>
+                    <input type="password" name="passcode" class="form-control bg-light border-start-0" placeholder="Enter staff passcode..." autofocus required>
+                </div>
+                <div class="form-text small text-muted">Demo Passcode: <code class="text-danger fw-bold">vnr@canteen</code></div>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 mb-3">
+                <i class="bi bi-door-open-fill text-warning"></i>
+                <span>Unlock Kitchen Dashboard</span>
+            </button>
+        </form>
+
+        <div class="border-top pt-3 mt-2">
+            <a th:href="@{/student}" class="text-decoration-none small text-muted">
+                <i class="bi bi-arrow-left me-1"></i> Return to VNR VJIET Student Menu
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Android App - VNR VJIET Canteen</title>
+    <meta th:if="${session.studentRollNo != null}" name="student-roll-no" th:content="${session.studentRollNo}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        .app-hero-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 1.5rem;
+            color: #fff;
+        }
+        .feature-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/student}">
+                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 34px; height: 34px;">
+                    <i class="bi bi-shop fs-6"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="lh-1">VNR VJIET Canteen</span>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">CAMPUS EXPRESS</small>
+                </div>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a th:href="@{/student/menu}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Food Menu
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-4 my-md-5">
+        <!-- Hero Section -->
+        <div class="card border-0 shadow-lg app-hero-card p-4 p-md-5 mb-4 position-relative overflow-hidden">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7 text-center text-lg-start">
+                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 small fw-bold mb-2">
+                        <i class="bi bi-android2 me-1"></i> ANDROID APPLICATION (APK)
+                    </span>
+                    <h1 class="fw-bold tracking-tight mb-2">VNR VJIET Canteen App</h1>
+                    <p class="lead fs-6 text-white-50 mb-4">
+                        Experience the fastest way to order meals between classes. Features native 1-tap UPI payments via <strong>PhonePe, Paytm & Google Pay</strong>, live token notifications & background kitchen tracking.
+                    </p>
+
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-3">
+                        <a th:href="@{/download/app}" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow d-flex align-items-center gap-2">
+                            <i class="bi bi-download fs-5"></i>
+                            <span>Download APK (v1.0.0)</span>
+                        </a>
+
+                        <button id="pwaInstallPageBtn" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold d-flex align-items-center gap-2">
+                            <i class="bi bi-phone"></i>
+                            <span>Install Web App (PWA)</span>
+                        </button>
+                    </div>
+
+                    <div class="small text-white-50 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3">
+                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> Android 8.0+</span>
+                        <span><i class="bi bi-shield-check text-success me-1"></i> Verified Clean & Safe</span>
+                        <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> UPI Enabled: <code class="text-warning">6301599722@mbkns</code></span>
+                    </div>
+                </div>
+
+                <!-- QR Code Download on Phone -->
+                <div class="col-lg-5 text-center">
+                    <div class="bg-white text-dark p-4 rounded-4 shadow-sm d-inline-block text-center" style="max-width: 280px; width: 100%;">
+                        <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing: 0.5px;">Scan from Android Phone</div>
+                        <img th:if="${qrBase64 != null}" th:src="${qrBase64}" alt="Download QR" class="img-fluid rounded-3 mb-2" style="width: 190px; height: 190px;">
+                        <p class="small text-muted mb-0" style="font-size: 0.75rem;">Point your camera at this QR code to download the APK directly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- App Features Grid -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                    <div class="feature-icon-box bg-primary-subtle text-primary mb-3">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">Real UPI 1-Tap Pay</h6>
+                    <p class="text-muted small mb-0">Direct checkout via PhonePe, Paytm, GPay to VNR Canteen UPI without manually typing account numbers.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                    <div class="feature-icon-box bg-success-subtle text-success mb-3">
+                        <i class="bi bi-bell-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">Live Status Push Alerts</h6>
+                    <p class="text-muted small mb-0">Receive instant chime audio and push notifications when your food is ready to collect from Counter #1.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                    <div class="feature-icon-box bg-warning-subtle text-warning mb-3">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">College Roll No Sync</h6>
+                    <p class="text-muted small mb-0">Built specifically for VNR VJIET students with automated department tagging and token management.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                    <div class="feature-icon-box bg-danger-subtle text-danger mb-3">
+                        <i class="bi bi-stopwatch-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">Zero Break Queues</h6>
+                    <p class="text-muted small mb-0">Pre-order from classroom 10 minutes before the interval bell. Walk up only when called.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3-Step Install Guide -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <h5 class="fw-bold text-dark mb-3">How to Install on Your Android Phone</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="badge bg-danger rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">1</div>
+                        <div>
+                            <strong class="text-dark d-block mb-1">Download the APK</strong>
+                            <p class="text-muted small mb-0">Tap the green "Download APK" button above or scan the QR code using your phone camera.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="badge bg-danger rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">2</div>
+                        <div>
+                            <strong class="text-dark d-block mb-1">Allow Unknown Sources</strong>
+                            <p class="text-muted small mb-0">Open the downloaded file. If Android asks, tap <em>Settings &rarr; Allow from this source</em> to proceed.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="badge bg-danger rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">3</div>
+                        <div>
+                            <strong class="text-dark d-block mb-1">Log in with VNR Roll No</strong>
+                            <p class="text-muted small mb-0">Launch the app, enter your VNR Roll Number, and start queueless food ordering with real UPI pay!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-auto border-top">
+        <div class="container text-center text-muted small">
+            <p class="mb-1 text-white-50">VNR Vignana Jyothi Institute of Engineering & Technology &bull; Bachupally, Hyderabad</p>
+            <div class="d-flex justify-content-center gap-3 pt-1">
+                <span>&copy; VNR VJIET Canteen Express</span>
+                <a th:href="@{/canteen/login}" class="text-white-50 text-decoration-none opacity-75">
+                    <i class="bi bi-shield-lock me-1"></i> Staff Portal
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/notifications.js}"></script>
+    <script>
+        // PWA Button trigger
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        document.getElementById('pwaInstallPageBtn')?.addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+            } else {
+                alert('PWA installation is supported directly from your browser menu: tap "Add to Home screen" or "Install App".');
+            }
+        });
+    </script>
+</body>
+</html>

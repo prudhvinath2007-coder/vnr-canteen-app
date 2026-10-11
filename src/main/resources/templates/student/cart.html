@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Basket - VNR VJIET Canteen</title>
+    <meta th:if="${session.studentRollNo != null}" name="student-roll-no" th:content="${session.studentRollNo}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/student}">
+                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 34px; height: 34px;">
+                    <i class="bi bi-shop fs-6"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="lh-1">VNR VJIET Canteen</span>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">CAMPUS EXPRESS</small>
+                </div>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Notification Bell Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm rounded-circle position-relative p-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Live Order Alerts">
+                        <i class="bi bi-bell-fill"></i>
+                        <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="width: 320px; max-width: 90vw;">
+                        <div class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom mb-2">
+                            <span class="fw-bold small text-dark"><i class="bi bi-bell-fill me-1 text-danger"></i> Notifications</span>
+                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger" style="font-size: 0.72rem;" onclick="markAllNotificationsRead()">Clear</button>
+                        </div>
+                        <div id="notifDropdownList" style="max-height: 260px; overflow-y: auto;">
+                            <div class="text-center py-3 text-muted small">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a th:href="@{/student/menu}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Menu
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-4 my-md-5">
+        <div class="row g-4">
+            <!-- Left: Cart Items List -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <h4 class="fw-bold mb-0 text-dark">
+                            <i class="bi bi-cart3 text-danger me-2"></i> Your Food Basket
+                        </h4>
+                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2 fw-semibold" th:text="${cartItemCount} + ' Items'">0 items</span>
+                    </div>
+
+                    <!-- Cart Items Table -->
+                    <div th:if="${cartItems != null and !cartItems.isEmpty()}">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light small text-muted">
+                                    <tr>
+                                        <th style="min-width: 180px;">Item</th>
+                                        <th class="text-center" style="min-width: 100px;">Price</th>
+                                        <th class="text-center" style="min-width: 120px;">Quantity</th>
+                                        <th class="text-end" style="min-width: 100px;">Subtotal</th>
+                                        <th class="text-end" style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${cartItems}">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2 gap-md-3">
+                                                <img th:src="${item.imageUrl != null and !item.imageUrl.isEmpty()} ? ${item.imageUrl} : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'"
+                                                     class="rounded-3 shadow-sm" style="width: 48px; height: 48px; min-width: 48px; object-fit: cover;" alt="item">
+                                                <div>
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <span th:if="${item.isVeg}" class="veg-badge"><span class="veg-dot"></span></span>
+                                                        <span th:unless="${item.isVeg}" class="nonveg-badge"><span class="nonveg-dot"></span></span>
+                                                        <span class="fw-bold text-dark small" th:text="${item.name}">Item Name</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="small text-muted fw-semibold" th:text="'₹' + ${item.price}">₹0.00</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-inline-flex align-items-center border rounded-pill p-1 bg-light">
+                                                <form th:action="@{/student/cart/update}" method="post" class="d-inline m-0">
+                                                    <input type="hidden" name="itemId" th:value="${item.itemId}">
+                                                    <input type="hidden" name="action" value="decrease">
+                                                    <button type="submit" class="btn btn-sm btn-white rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px;">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                </form>
+
+                                                <span class="fw-bold px-2 px-md-3 small text-dark" th:text="${item.quantity}">1</span>
+
+                                                <form th:action="@{/student/cart/update}" method="post" class="d-inline m-0">
+                                                    <input type="hidden" name="itemId" th:value="${item.itemId}">
+                                                    <input type="hidden" name="action" value="increase">
+                                                    <button type="submit" class="btn btn-sm btn-white rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 26px; height: 26px;">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-bold text-dark small" th:text="'₹' + ${item.subtotal}">
+                                            ₹0.00
+                                        </td>
+                                        <td class="text-end">
+                                            <form th:action="@{/student/cart/update}" method="post" class="d-inline m-0">
+                                                <input type="hidden" name="itemId" th:value="${item.itemId}">
+                                                <input type="hidden" name="action" value="remove">
+                                                <button type="submit" class="btn btn-link text-danger p-0" title="Remove item">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top">
+                            <a th:href="@{/student/menu}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                <i class="bi bi-plus-circle me-1"></i> Add More Items
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Empty Cart -->
+                    <div th:if="${cartItems == null or cartItems.isEmpty()}" class="text-center py-5">
+                        <i class="bi bi-cart-x text-muted" style="font-size: 3.5rem;"></i>
+                        <h4 class="fw-bold mt-3 text-dark">Your basket is empty</h4>
+                        <p class="text-muted small">Choose your favorite dishes from our hot canteen menu.</p>
+                        <a th:href="@{/student/menu}" class="btn btn-danger rounded-pill px-4 fw-bold mt-2">
+                            Explore Menu
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary Card -->
+            <div class="col-lg-4" th:if="${cartItems != null and !cartItems.isEmpty()}">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 85px;">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark">Order Summary</h5>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Item Subtotal</span>
+                        <span class="fw-bold text-dark" th:text="'₹' + ${cartTotal}">₹0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">College Food Subsidy</span>
+                        <span class="text-success fw-bold">₹0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small">
+                        <span class="text-muted">Packaging / Parcel</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+
+                    <div class="border-top pt-3 d-flex justify-content-between align-items-center mb-4">
+                        <span class="fs-6 fw-bold text-dark">Total Amount</span>
+                        <span class="fs-4 fw-bold text-danger" th:text="'₹' + ${cartTotal}">₹0.00</span>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-4 small text-muted border">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-shield-check text-success fs-5"></i>
+                            <strong class="text-dark">Safe UPI QR Checkout</strong>
+                        </div>
+                        Scan instantly with Google Pay, PhonePe, Paytm, or BHIM.
+                    </div>
+
+                    <a th:href="@{/student/checkout}" class="btn btn-danger btn-lg rounded-pill w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                        <span>Proceed to Pay</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-auto border-top">
+        <div class="container text-center text-muted small">
+            <p class="mb-1 text-white-50">VNR Vignana Jyothi Institute of Engineering & Technology &bull; Bachupally, Hyderabad</p>
+            <div class="d-flex justify-content-center gap-3 pt-1">
+                <a th:href="@{/download-app}" class="text-white-50 text-decoration-none opacity-75 hover-opacity-100">
+                    <i class="bi bi-android2 text-success me-1"></i> Android App
+                </a>
+                <span>&copy; VNR VJIET Canteen Express</span>
+                <a th:href="@{/canteen/login}" class="text-white-50 text-decoration-none opacity-75">
+                    <i class="bi bi-shield-lock me-1"></i> Staff Portal
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/notifications.js}"></script>
+</body>
+</html>

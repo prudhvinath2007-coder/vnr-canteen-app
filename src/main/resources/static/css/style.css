@@ -1,0 +1,446 @@
+/* ====================================================================
+   Campus Canteen Express - Modern, Responsive UI Theme
+   ==================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #ff4757;
+    --primary-dark: #e84118;
+    --primary-light: #ffeaa7;
+    --primary-subtle: #fff1f2;
+    --dark: #0f172a;
+    --dark-surface: #1e293b;
+    --gray-bg: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--gray-bg);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+main {
+    flex: 1;
+}
+
+/* Typography & Truncation utilities */
+.text-truncate-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Navbar */
+.navbar-custom {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.75rem 0;
+}
+
+.navbar-custom .navbar-brand {
+    font-size: 1.2rem;
+    letter-spacing: -0.3px;
+}
+
+.brand-badge {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Category Pills & Horizontal Scroll on Mobile */
+.category-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 8px;
+    padding: 4px 2px 8px 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.category-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.category-pill {
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.category-pill:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.category-pill.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(255, 71, 87, 0.35);
+}
+
+/* Food Cards */
+.food-card {
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #ffffff;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.food-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: #cbd5e1;
+}
+
+.food-card-img-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 60%; /* 16:9 ratio */
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.food-card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.food-card:hover .food-card-img {
+    transform: scale(1.06);
+}
+
+/* Veg / Non-Veg Badges */
+.veg-badge, .nonveg-badge {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    padding: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.veg-badge {
+    border: 2px solid #16a34a;
+}
+
+.veg-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #16a34a;
+    border-radius: 50%;
+}
+
+.nonveg-badge {
+    border: 2px solid #dc2626;
+}
+
+.nonveg-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #dc2626;
+    border-radius: 50%;
+}
+
+/* Responsive Stepper Tracker */
+.status-tracker-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    padding: 1.75rem;
+}
+
+.step-wizard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    margin: 2.2rem 0 1.5rem 0;
+    width: 100%;
+}
+
+/* The horizontal progress background track */
+.step-track-bg {
+    position: absolute;
+    top: 24px;
+    left: 12.5%;
+    right: 12.5%;
+    height: 4px;
+    background-color: #e2e8f0;
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.step-progress-bar {
+    position: absolute;
+    top: 24px;
+    left: 12.5%;
+    height: 4px;
+    background: linear-gradient(90deg, #ff4757, #10b981);
+    z-index: 2;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+}
+
+.step-item {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 25%;
+    text-align: center;
+    padding: 0 4px;
+}
+
+.step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 3px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: #94a3b8;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.step-item.active .step-circle {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 6px rgba(255, 71, 87, 0.25);
+    animation: pulse 1.8s infinite;
+}
+
+.step-item.completed .step-circle {
+    background-color: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+}
+
+.step-label {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #64748b;
+    word-break: normal;
+}
+
+.step-item.active .step-label {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.step-item.completed .step-label {
+    color: #10b981;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+    }
+}
+
+/* Big Token Pickup Card */
+.token-card {
+    background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.token-big-number {
+    font-size: 3.6rem;
+    font-weight: 900;
+    line-height: 1;
+    margin: 0.5rem 0;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* UPI QR Code Container */
+.upi-qr-card {
+    background: #ffffff;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Order Board in Kitchen */
+.order-board-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+    border-left: 6px solid #cbd5e1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-board-card.status-ORDERED {
+    border-left-color: #3b82f6;
+}
+
+.order-board-card.status-PREPARING {
+    border-left-color: #f59e0b;
+}
+
+.order-board-card.status-READY_TO_COLLECT {
+    border-left-color: #10b981;
+}
+
+.order-board-card.status-DELIVERED {
+    border-left-color: #94a3b8;
+}
+
+.order-board-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Alert Ping */
+.new-order-alert {
+    animation: flashAlert 0.8s ease-in-out 3;
+}
+
+@keyframes flashAlert {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: #fef08a; }
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+    .step-circle {
+        width: 38px;
+        height: 38px;
+        font-size: 0.95rem;
+    }
+
+    .step-track-bg,
+    .step-progress-bar {
+        top: 19px;
+    }
+
+    .step-label {
+        font-size: 0.72rem;
+        margin-top: 6px;
+    }
+
+    .token-big-number {
+        font-size: 2.8rem;
+    }
+
+    .status-tracker-card {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .food-card-img-wrapper {
+        padding-top: 55%;
+    }
+
+    .table-responsive-stack td {
+        display: block;
+        text-align: right;
+    }
+}
+
+@media (max-width: 480px) {
+    .step-label {
+        font-size: 0.68rem;
+    }
+
+    .step-circle {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+
+    .step-track-bg,
+    .step-progress-bar {
+        top: 17px;
+    }
+}

@@ -1,0 +1,26 @@
+# Maven build output
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# IDE & OS files
+.DS_Store
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Android build cache
+android-app/.gradle/
+android-app/build/
+android-app/app/build/
+android-app/local.properties
+.gradle/
+
+# Logs
+*.log

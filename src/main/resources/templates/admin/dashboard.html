@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Live Board - Canteen Staff</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Admin Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid px-3 px-lg-4">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/canteen/admin/dashboard}">
+                <i class="bi bi-fire text-warning fs-4"></i>
+                <span>Kitchen Order Board</span>
+                <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.72rem;">STAFF</span>
+            </a>
+
+            <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-2 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" th:href="@{/canteen/admin/dashboard}">
+                            <i class="bi bi-kanban me-1"></i> Live Orders
+                            <span class="badge bg-danger rounded-pill ms-1" id="activeBadge" th:text="${stats.orderedCount}">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/canteen/admin/menu}">
+                            <i class="bi bi-egg-fried me-1"></i> Menu & Stock
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/canteen/admin/reports}">
+                            <i class="bi bi-graph-up-arrow me-1"></i> Sales & Reports
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2 mt-lg-0">
+                    <div class="form-check form-switch text-light small mb-0 me-2">
+                        <input class="form-check-input" type="checkbox" id="audioChimeSwitch" checked>
+                        <label class="form-check-label text-white-50" for="audioChimeSwitch"><i class="bi bi-volume-up-fill me-1"></i> Sound Bell</label>
+                    </div>
+
+                    <a th:href="@{/student}" target="_blank" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> Student View
+                    </a>
+
+                    <a th:href="@{/canteen/logout}" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Log out of staff portal?');">
+                        <i class="bi bi-box-arrow-right me-1"></i> Log Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid px-3 px-lg-4 py-4">
+        <!-- Flash Alert -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2 mb-4" role="alert">
+            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+            <span class="small fw-semibold" th:text="${successMessage}"></span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-2 g-md-3 mb-4">
+            <!-- Step 6: Live Orders Badge / New Pending -->
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem;">New Orders</div>
+                            <h2 class="fw-bold mb-0 mt-1" id="statOrdered" th:text="${stats.orderedCount}">0</h2>
+                        </div>
+                        <i class="bi bi-bell-fill fs-2 text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Preparing Orders -->
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning text-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.72rem;">In Cooking</div>
+                            <h2 class="fw-bold mb-0 mt-1" id="statPreparing" th:text="${stats.preparingCount}">0</h2>
+                        </div>
+                        <i class="bi bi-fire fs-2 text-black-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 8: Ready to Collect -->
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem;">Ready for Pickup</div>
+                            <h2 class="fw-bold mb-0 mt-1" id="statReady" th:text="${stats.readyCount}">0</h2>
+                        </div>
+                        <i class="bi bi-check2-circle fs-2 text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 9: Delivered / Revenue Today -->
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem;">Today's Revenue</div>
+                            <h2 class="fw-bold mb-0 mt-1" th:text="'₹' + ${stats.todayRevenue != null ? stats.todayRevenue : '0.00'}">₹0</h2>
+                        </div>
+                        <i class="bi bi-cash-stack fs-2 text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Pills & Live Tag -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <h4 class="fw-bold mb-0 text-dark">Live Orders Queue</h4>
+                <span class="badge bg-danger rounded-pill px-2 py-1 small" id="liveTag">
+                    <span class="spinner-grow spinner-grow-sm me-1" style="width: 0.5rem; height: 0.5rem;"></span> LIVE
+                </span>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="btn-group btn-group-sm" role="group">
+                <a th:href="@{/canteen/admin/dashboard}" class="btn btn-outline-secondary" th:classappend="${statusFilter == null or statusFilter.isEmpty()} ? 'active fw-bold' : ''">Active Queue</a>
+                <a th:href="@{/canteen/admin/dashboard(statusFilter='ORDERED')}" class="btn btn-outline-primary" th:classappend="${statusFilter == 'ORDERED'} ? 'active fw-bold' : ''">New</a>
+                <a th:href="@{/canteen/admin/dashboard(statusFilter='PREPARING')}" class="btn btn-outline-warning text-dark" th:classappend="${statusFilter == 'PREPARING'} ? 'active fw-bold' : ''">Preparing</a>
+                <a th:href="@{/canteen/admin/dashboard(statusFilter='READY_TO_COLLECT')}" class="btn btn-outline-success" th:classappend="${statusFilter == 'READY_TO_COLLECT'} ? 'active fw-bold' : ''">Ready</a>
+                <a th:href="@{/canteen/admin/dashboard(statusFilter='DELIVERED')}" class="btn btn-outline-dark" th:classappend="${statusFilter == 'DELIVERED'} ? 'active fw-bold' : ''">Delivered</a>
+            </div>
+        </div>
+
+        <!-- Live Orders Cards Grid -->
+        <div class="row g-3" id="ordersContainer">
+            <div class="col-md-6 col-lg-4 col-xl-3" th:each="order : ${activeOrders}" th:id="'order-card-' + ${order.id}">
+                <div class="card order-board-card h-100 p-3" th:classappend="'status-' + ${order.orderStatus.name()}">
+                    <!-- Card Header: Token & Status -->
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="badge bg-dark fs-6 rounded-pill px-3 py-1 fw-bold" th:text="'TOKEN #' + ${order.tokenNumber}">Token #101</span>
+                            <div class="text-muted font-monospace small mt-1" th:text="${order.orderNumber}">ORD-XXXX</div>
+                        </div>
+
+                        <div>
+                            <span th:if="${order.orderStatus.name() == 'ORDERED'}" class="badge bg-primary text-white rounded-pill px-2 py-1 small fw-bold">New Order</span>
+                            <span th:if="${order.orderStatus.name() == 'PREPARING'}" class="badge bg-warning text-dark rounded-pill px-2 py-1 small fw-bold">Cooking</span>
+                            <span th:if="${order.orderStatus.name() == 'READY_TO_COLLECT'}" class="badge bg-success text-white rounded-pill px-2 py-1 small fw-bold">Ready</span>
+                            <span th:if="${order.orderStatus.name() == 'DELIVERED'}" class="badge bg-secondary text-white rounded-pill px-2 py-1 small fw-bold">Delivered</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer Info -->
+                    <div class="border-top border-bottom py-2 my-2 small">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Student:</span>
+                            <span class="fw-bold text-dark" th:text="${order.customerName}">Rahul</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Roll No:</span>
+                            <span class="fw-bold font-monospace text-dark" th:text="${order.studentRollNo}">21BD1A0501</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Time:</span>
+                            <span class="text-muted" th:text="${order.formattedOrderTime}">Time</span>
+                        </div>
+                        <div th:if="${order.specialInstructions != null and !order.specialInstructions.isEmpty()}" class="mt-1 p-1 bg-light rounded text-danger small border">
+                            <i class="bi bi-chat-quote-fill me-1"></i> <strong th:text="${order.specialInstructions}"></strong>
+                        </div>
+                    </div>
+
+                    <!-- Dishes List -->
+                    <div class="flex-grow-1 my-2">
+                        <h6 class="small fw-bold text-muted mb-1">Items to Cook:</h6>
+                        <ul class="list-unstyled mb-0 small">
+                            <li th:each="item : ${order.items}" class="d-flex justify-content-between py-1 border-bottom">
+                                <span class="fw-bold text-dark" th:text="${item.quantity} + 'x ' + ${item.itemName}">1x Dosa</span>
+                                <span class="text-muted" th:text="'₹' + ${item.subtotal}">₹60</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 mb-3">
+                        <span class="small text-muted">Total (UPI Paid):</span>
+                        <span class="fw-bold fs-6 text-success" th:text="'₹' + ${order.totalAmount}">₹0.00</span>
+                    </div>
+
+                    <!-- Workflow Buttons matching Flowchart -->
+                    <div class="mt-auto pt-2 border-top">
+                        <!-- Step 7: Accept & Prepare Order -->
+                        <form th:if="${order.orderStatus.name() == 'ORDERED'}" th:action="@{/canteen/admin/orders/{id}/prepare(id=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold btn-sm shadow-sm py-2">
+                                <i class="bi bi-fire me-1"></i> Accept & Prepare (Step 7)
+                            </button>
+                        </form>
+
+                        <!-- Step 8: Ready to Collect -->
+                        <form th:if="${order.orderStatus.name() == 'PREPARING'}" th:action="@{/canteen/admin/orders/{id}/ready(id=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold btn-sm shadow-sm py-2">
+                                <i class="bi bi-bell-fill me-1"></i> Ready to Collect (Step 8)
+                            </button>
+                        </form>
+
+                        <!-- Step 9: Marks Order as Delivered & Closes Order -->
+                        <form th:if="${order.orderStatus.name() == 'READY_TO_COLLECT'}" th:action="@{/canteen/admin/orders/{id}/deliver(id=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold btn-sm shadow-sm py-2">
+                                <i class="bi bi-check2-circle me-1"></i> Mark Delivered (Step 9)
+                            </button>
+                        </form>
+
+                        <div th:if="${order.orderStatus.name() == 'DELIVERED'}" class="text-center text-muted small py-1">
+                            <i class="bi bi-lock-fill me-1"></i> Order Closed & Delivered
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty Queue message -->
+            <div th:if="${activeOrders == null or activeOrders.isEmpty()}" class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4 bg-white">
+                    <i class="bi bi-cup-hot text-muted" style="font-size: 3.5rem;"></i>
+                    <h4 class="fw-bold mt-3 text-dark">No Pending Orders</h4>
+                    <p class="text-muted small">New student orders will appear here automatically with an audio alert chime.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let previousPendingCount = parseInt(document.getElementById('statOrdered').textContent) || 0;
+
+        function playDingSound() {
+            if (!document.getElementById('audioChimeSwitch').checked) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.setValueAtTime(1200, now + 0.1);
+
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        setInterval(() => {
+            fetch('/api/orders/live-queue')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.stats) {
+                        const newOrdered = data.stats.orderedCount;
+                        if (newOrdered > previousPendingCount) {
+                            playDingSound();
+                            document.getElementById('liveTag').classList.add('new-order-alert');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                        previousPendingCount = newOrdered;
+
+                        document.getElementById('statOrdered').textContent = data.stats.orderedCount;
+                        document.getElementById('statPreparing').textContent = data.stats.preparingCount;
+                        document.getElementById('statReady').textContent = data.stats.readyCount;
+                        document.getElementById('activeBadge').textContent = data.stats.orderedCount;
+                    }
+                })
+                .catch(err => console.log('Polling queue error', err));
+        }, 5000);
+    </script>
+</body>
+</html>

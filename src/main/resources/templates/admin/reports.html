@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales & Token Reports - Canteen Staff</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid px-3 px-lg-4">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/canteen/admin/dashboard}">
+                <i class="bi bi-fire text-warning fs-4"></i>
+                <span>Canteen Kitchen Dashboard</span>
+                <span class="badge bg-warning text-dark fw-bold">STAFF</span>
+            </a>
+            <div class="collapse navbar-collapse" id="adminReportsNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/canteen/admin/dashboard}"><i class="bi bi-kanban me-1"></i> Live Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/canteen/admin/menu}"><i class="bi bi-egg-fried me-1"></i> Menu & Stock</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" th:href="@{/canteen/admin/reports}"><i class="bi bi-graph-up-arrow me-1"></i> Sales & Reports</a>
+                    </li>
+                </ul>
+                <a th:href="@{/portal}" class="btn btn-outline-light btn-sm rounded-pill px-3">Switch Role</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid px-3 px-lg-4 py-4">
+        <!-- Revenue and Metrics Cards -->
+        <div class="row g-2 g-md-3 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-dark text-white">
+                    <span class="text-white-50 text-uppercase small fw-bold" style="font-size: 0.72rem;">Total Revenue (Delivered Orders)</span>
+                    <h2 class="fw-bold mt-2 mb-0" th:text="'₹' + ${stats.totalRevenue != null ? stats.totalRevenue : '0.00'}">₹0.00</h2>
+                    <small class="text-success mt-2 d-block"><i class="bi bi-check-circle me-1"></i> Verified via UPI QR</small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
+                    <span class="text-muted text-uppercase small fw-bold" style="font-size: 0.72rem;">Today's Orders Count</span>
+                    <h2 class="fw-bold mt-2 mb-0 text-primary" th:text="${stats.todayOrdersCount}">0</h2>
+                    <small class="text-muted mt-2 d-block"><i class="bi bi-database me-1"></i> Recorded in Oracle Database</small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
+                    <span class="text-muted text-uppercase small fw-bold" style="font-size: 0.72rem;">Completed & Closed</span>
+                    <h2 class="fw-bold mt-2 mb-0 text-success" th:text="${stats.deliveredCount}">0</h2>
+                    <small class="text-muted mt-2 d-block"><i class="bi bi-shield-check me-1"></i> Fulfillments Completed</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Audit Table -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-3 border-bottom gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1 text-dark"><i class="bi bi-table me-2 text-danger"></i> Complete Orders Audit Log</h5>
+                    <p class="text-muted small mb-0">Trace student meal orders, token sequences, and UPI payment details.</p>
+                </div>
+                <button onclick="window.print()" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-printer me-1"></i> Print / Export
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="table-light small text-muted">
+                        <tr>
+                            <th>Token</th>
+                            <th>Order ID</th>
+                            <th>Student</th>
+                            <th>Roll Number</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td><span class="badge bg-dark fw-bold rounded-pill px-3 py-1" th:text="'#' + ${order.tokenNumber}">#101</span></td>
+                            <td class="font-monospace small text-muted" th:text="${order.orderNumber}">ORD-123</td>
+                            <td class="fw-bold text-dark small" th:text="${order.customerName}">Name</td>
+                            <td class="font-monospace small text-muted" th:text="${order.studentRollNo}">ROLL</td>
+                            <td>
+                                <span class="small" th:each="item, iterStat : ${order.items}" th:text="${item.quantity} + 'x ' + ${item.itemName} + (!iterStat.last ? ', ' : '')"></span>
+                            </td>
+                            <td class="fw-bold text-dark small" th:text="'₹' + ${order.totalAmount}">₹0.00</td>
+                            <td>
+                                <span th:if="${order.orderStatus.name() == 'ORDERED'}" class="badge bg-primary text-white rounded-pill px-2 py-1 small">Ordered</span>
+                                <span th:if="${order.orderStatus.name() == 'PREPARING'}" class="badge bg-warning text-dark rounded-pill px-2 py-1 small">Preparing</span>
+                                <span th:if="${order.orderStatus.name() == 'READY_TO_COLLECT'}" class="badge bg-success text-white rounded-pill px-2 py-1 small">Ready</span>
+                                <span th:if="${order.orderStatus.name() == 'DELIVERED'}" class="badge bg-secondary text-white rounded-pill px-2 py-1 small">Delivered</span>
+                                <span th:if="${order.orderStatus.name() == 'CANCELLED'}" class="badge bg-danger text-white rounded-pill px-2 py-1 small">Cancelled</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small" th:text="${order.paymentStatus.displayName}">PAID (UPI)</span>
+                            </td>
+                            <td class="small text-muted" th:text="${order.formattedOrderTime}">Time</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

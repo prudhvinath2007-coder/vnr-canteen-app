@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VNR VJIET Canteen - Food Ordering App</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff4757">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta th:if="${session.studentRollNo != null}" name="student-roll-no" th:content="${session.studentRollNo}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Student Navigation with VNR VJIET Branding -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/student}">
+                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 34px; height: 34px;">
+                    <i class="bi bi-shop fs-6"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="lh-1">VNR VJIET Canteen</span>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">CAMPUS EXPRESS</small>
+                </div>
+            </a>
+
+            <!-- Right Controls: Notification Bell, Orders, Cart, Profile -->
+            <div class="d-flex align-items-center gap-2 order-lg-last">
+                <!-- Notification Bell Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm rounded-circle position-relative p-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Live Order Alerts">
+                        <i class="bi bi-bell-fill"></i>
+                        <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem;">
+                            0
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="width: 330px; max-width: 92vw;">
+                        <div class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom mb-2">
+                            <span class="fw-bold small text-dark"><i class="bi bi-bell-fill me-1 text-danger"></i> Student Notifications</span>
+                            <div class="d-flex gap-1 align-items-center">
+                                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-muted" style="font-size: 0.72rem;" onclick="requestNotificationPermission()">
+                                    <i class="bi bi-volume-up"></i> Alerts
+                                </button>
+                                <span class="text-muted small">|</span>
+                                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger" style="font-size: 0.72rem;" onclick="markAllNotificationsRead()">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div id="notifDropdownList" style="max-height: 280px; overflow-y: auto;">
+                            <div class="text-center py-3 text-muted small">Loading alerts...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Orders / Track Button -->
+                <a th:href="@{/student/my-orders}" class="btn btn-outline-light btn-sm rounded-pill px-2 px-sm-3 d-flex align-items-center gap-1" title="Track Order">
+                    <i class="bi bi-clock-history"></i> <span class="d-none d-sm-inline">Tokens</span>
+                </a>
+
+                <!-- Android App Download Pill -->
+                <a th:href="@{/download-app}" class="btn btn-outline-success btn-sm rounded-pill px-2 px-sm-3 d-flex align-items-center gap-1" title="Download Android App">
+                    <i class="bi bi-android2"></i> <span class="d-none d-md-inline">App</span>
+                </a>
+
+                <!-- Cart Pill -->
+                <a th:href="@{/student/cart}" class="btn btn-danger position-relative rounded-pill px-3 py-1 fw-bold shadow-sm d-flex align-items-center gap-1">
+                    <i class="bi bi-bag-check-fill"></i>
+                    <span class="d-none d-sm-inline">Cart</span>
+                    <span th:if="${cartItemCount > 0}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white" th:text="${cartItemCount}">
+                        0
+                    </span>
+                    <span th:if="${cartTotal != null and cartTotal > 0}" class="ms-1 fw-bold" th:text="'₹' + ${cartTotal}"></span>
+                </a>
+
+                <!-- Student Login / Account Status -->
+                <div th:if="${session.loggedInStudent != null}" class="dropdown">
+                    <button class="btn btn-dark border border-secondary border-opacity-50 btn-sm rounded-pill px-2 px-sm-3 d-flex align-items-center gap-2 text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 22px; height: 22px; font-size: 0.7rem;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <span class="small fw-semibold d-none d-md-inline" th:text="${session.studentName}">Student</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 210px;">
+                        <li class="px-3 py-2 border-bottom mb-1">
+                            <div class="fw-bold text-dark text-truncate" th:text="${session.studentName}">Student</div>
+                            <div class="small font-monospace text-danger fw-semibold" th:text="${session.studentRollNo}">Roll No</div>
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-0 mt-1" style="font-size: 0.68rem;" th:text="${session.studentDept != null ? session.studentDept : 'VNR VJIET'}">CSE</span>
+                        </li>
+                        <li><a class="dropdown-item rounded-3 py-1 small" th:href="@{/student/my-orders}"><i class="bi bi-receipt me-2 text-muted"></i> My Orders & Tokens</a></li>
+                        <li><a class="dropdown-item rounded-3 py-1 small" th:href="@{/download-app}"><i class="bi bi-android2 me-2 text-success"></i> Download Android App</a></li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li><a class="dropdown-item rounded-3 py-1 small text-danger" th:href="@{/student/logout}"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
+                    </ul>
+                </div>
+
+                <div th:if="${session.loggedInStudent == null}" class="d-flex align-items-center gap-1">
+                    <a th:href="@{/student/login}" class="btn btn-warning btn-sm rounded-pill px-2 px-sm-3 fw-bold text-dark">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> <span class="d-none d-sm-inline">Sign In</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Android App & PWA Install Banner on Mobile -->
+    <div id="pwaInstallBanner" class="bg-dark text-white py-2 px-3 border-bottom">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2 small">
+                <i class="bi bi-android2 text-success fs-5"></i>
+                <span>Get <strong>VNR Canteen Android App</strong> with 1-Tap UPI</span>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/download-app}" class="btn btn-sm btn-success rounded-pill px-3 fw-bold">Download APK</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- College Announcements Banner -->
+    <div class="bg-white border-bottom py-3 py-md-4 mb-3">
+        <div class="container">
+            <div class="row align-items-center g-2">
+                <div class="col-md-7 col-lg-8">
+                    <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small fw-bold mb-1">
+                        VALLURUPALLI NAGESWARA RAO VJIET
+                    </span>
+                    <h3 class="fw-bold mb-1 tracking-tight text-dark">Queueless Campus Food Ordering</h3>
+                    <p class="text-muted small mb-0">Order snacks & meals ahead between lectures. Pay via UPI and pick up with your token when ready.</p>
+                </div>
+                <div class="col-md-5 col-lg-4 text-md-end mt-2 mt-md-0 d-flex flex-wrap justify-content-md-end gap-2">
+                    <span class="badge bg-success-subtle text-success p-2 rounded-pill small border border-success-subtle">
+                        <i class="bi bi-qr-code-scan me-1"></i> UPI QR Pay
+                    </span>
+                    <span class="badge bg-primary-subtle text-primary p-2 rounded-pill small border border-primary-subtle">
+                        <i class="bi bi-display me-1"></i> Live Token Queue
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container mb-5">
+        <!-- Notification Alerts -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+            <span class="small fw-semibold" th:text="${successMessage}"></span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+            <span class="small fw-semibold" th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Search Bar and Veg Filter -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6 col-lg-5">
+                    <form th:action="@{/student/menu}" method="get" class="input-group">
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" th:value="${search}" class="form-control bg-light border-0 small" placeholder="Search dosa, biryani, samosa, chai...">
+                        <button class="btn btn-danger px-3 fw-semibold small" type="submit">Search</button>
+                    </form>
+                </div>
+
+                <div class="col-md-6 col-lg-7 d-flex justify-content-md-end align-items-center gap-3">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="vegFilter" onchange="toggleVeg(this)" th:checked="${vegOnly}">
+                        <label class="form-check-label small fw-bold d-flex align-items-center gap-1 cursor-pointer" for="vegFilter">
+                            <span class="veg-badge"><span class="veg-dot"></span></span> Pure Veg Only
+                        </label>
+                    </div>
+
+                    <a th:if="${search != null or vegOnly}" th:href="@{/student/menu}" class="btn btn-link text-muted small p-0 text-decoration-none">
+                        <i class="bi bi-x-circle me-1"></i> Clear
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Horizontal Scroll Pills (Responsive) -->
+        <div class="mb-4">
+            <div class="category-scroll-container">
+                <a th:href="@{/student/menu}" class="category-pill" th:classappend="${selectedCategory == null and (search == null or search.isEmpty())} ? 'active' : ''">
+                    <i class="bi bi-grid-fill"></i> All Items
+                </a>
+                <th:block th:each="cat : ${categories}">
+                    <a th:href="@{/student/menu(category=${cat.id})}" class="category-pill" th:classappend="${selectedCategory == cat.id} ? 'active' : ''">
+                        <i th:class="'bi ' + ${cat.icon}"></i>
+                        <span th:text="${cat.name}">Category</span>
+                    </a>
+                </th:block>
+            </div>
+        </div>
+
+        <!-- Menu Items Grid -->
+        <div class="row g-3 g-md-4" th:if="${items != null and !items.isEmpty()}">
+            <div class="col-6 col-md-4 col-xl-3" th:each="item : ${items}">
+                <div class="food-card">
+                    <div class="food-card-img-wrapper">
+                        <img th:src="${item.imageUrl != null and !item.imageUrl.isEmpty()} ? ${item.imageUrl} : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600'"
+                             th:alt="${item.name}" class="food-card-img" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600'">
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span th:if="${item.isVeg}" class="veg-badge" title="Vegetarian"><span class="veg-dot"></span></span>
+                            <span th:unless="${item.isVeg}" class="nonveg-badge" title="Non-Vegetarian"><span class="nonveg-dot"></span></span>
+                        </div>
+                        <div class="position-absolute bottom-0 end-0 m-2">
+                            <span class="badge bg-dark bg-opacity-75 text-white rounded-pill px-2 py-1" style="font-size: 0.7rem;">
+                                <i class="bi bi-clock me-1"></i><span th:text="${item.prepTimeMinutes} + 'm'"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2 p-md-3 d-flex flex-column">
+                        <h6 class="fw-bold mb-1 text-truncate text-dark" th:title="${item.name}" th:text="${item.name}">Item Name</h6>
+                        <p class="text-muted small text-truncate-2 mb-3 flex-grow-1" style="min-height: 38px; font-size: 0.8rem;" th:text="${item.description}">Item description</p>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+                            <div>
+                                <span class="fw-bold text-dark fs-6" th:text="'₹' + ${item.price}">₹0.00</span>
+                            </div>
+
+                            <form th:action="@{/student/cart/add}" method="post">
+                                <input type="hidden" name="itemId" th:value="${item.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button th:if="${item.isAvailable}" type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2 px-md-3 fw-bold">
+                                    <i class="bi bi-plus"></i> <span class="d-none d-sm-inline">Add</span>
+                                </button>
+                                <button th:unless="${item.isAvailable}" type="button" class="btn btn-secondary btn-sm rounded-pill px-2" style="font-size: 0.72rem;" disabled>
+                                    Sold Out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4" th:if="${items == null or items.isEmpty()}">
+            <i class="bi bi-search text-muted" style="font-size: 3.5rem;"></i>
+            <h4 class="fw-bold mt-3">No dishes found</h4>
+            <p class="text-muted small">No items match your filter. Try choosing another category or clearing search filters.</p>
+            <div class="mt-2">
+                <a th:href="@{/student/menu}" class="btn btn-danger rounded-pill px-4 fw-bold">View Full Menu</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Floating Checkout Bar -->
+    <div th:if="${cartItemCount > 0}" class="fixed-bottom p-3 d-md-none" style="z-index: 1040;">
+        <div class="card bg-dark text-white shadow-lg border-0 rounded-4 p-3 d-flex flex-row justify-content-between align-items-center">
+            <div>
+                <span class="badge bg-warning text-dark me-2 fw-bold" th:text="${cartItemCount} + ' items'">0 items</span>
+                <span class="fw-bold fs-6" th:text="'₹' + ${cartTotal}">₹0</span>
+            </div>
+            <a th:href="@{/student/cart}" class="btn btn-danger rounded-pill px-4 fw-bold btn-sm shadow-sm">
+                View Cart <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- College Footer with Discreet Hidden Staff Link -->
+    <footer class="bg-dark text-light py-4 mt-auto border-top">
+        <div class="container text-center text-muted small">
+            <p class="mb-1 fw-semibold text-white-50">VNR Vignana Jyothi Institute of Engineering & Technology &bull; Pragathi Nagar, Bachupally, Hyderabad</p>
+            <p class="mb-2">&copy; VNR VJIET Canteen Management System &bull; Fast, Queueless Dining</p>
+            <div class="pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-center gap-3">
+                <a th:href="@{/download-app}" class="text-white-50 text-decoration-none opacity-75 hover-opacity-100">
+                    <i class="bi bi-android2 text-success me-1"></i> Android App
+                </a>
+                <span class="text-white-50"><i class="bi bi-database text-success me-1"></i> Oracle DB</span>
+                <span class="text-white-50"><i class="bi bi-qr-code text-warning me-1"></i> UPI Enabled</span>
+                <!-- Discreet Staff Login Entrance -->
+                <a th:href="@{/canteen/login}" class="text-decoration-none text-white-50 opacity-75 hover-opacity-100">
+                    <i class="bi bi-shield-lock me-1"></i> Staff Portal
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleVeg(checkbox) {
+            const url = new URL(window.location.href);
+            if (checkbox.checked) {
+                url.searchParams.set('vegOnly', 'true');
+            } else {
+                url.searchParams.delete('vegOnly');
+            }
+            window.location.href = url.toString();
+        }
+
+        // PWA Installation Service Worker & Prompt
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW reg fail', err));
+            });
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) banner.classList.remove('d-none');
+        });
+
+        document.getElementById('pwaInstallBtn')?.addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('pwaInstallBanner').classList.add('d-none');
+                    deferredPrompt = null;
+                });
+            }
+        });
+    </script>
+    <script th:src="@{/js/notifications.js}"></script>
+</body>
+</html>

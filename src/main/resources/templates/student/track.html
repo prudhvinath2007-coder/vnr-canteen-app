@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Status & Tracking - VNR VJIET Canteen</title>
+    <meta th:if="${order.studentRollNo != null}" name="student-roll-no" th:content="${order.studentRollNo}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" th:href="@{/student}">
+                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 34px; height: 34px;">
+                    <i class="bi bi-shop fs-6"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="lh-1">VNR VJIET Canteen</span>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">CAMPUS EXPRESS</small>
+                </div>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Notification Bell Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm rounded-circle position-relative p-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Live Order Alerts">
+                        <i class="bi bi-bell-fill"></i>
+                        <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65rem;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="width: 320px; max-width: 90vw;">
+                        <div class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom mb-2">
+                            <span class="fw-bold small text-dark"><i class="bi bi-bell-fill me-1 text-danger"></i> Notifications</span>
+                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger" style="font-size: 0.72rem;" onclick="markAllNotificationsRead()">Clear</button>
+                        </div>
+                        <div id="notifDropdownList" style="max-height: 260px; overflow-y: auto;">
+                            <div class="text-center py-3 text-muted small">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a th:href="@{/student/menu}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-plus-circle me-1"></i> New Order
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-4 my-md-5">
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+            <span class="small fw-semibold" th:text="${successMessage}"></span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+            <span class="small fw-semibold" th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Notification Banner when READY TO COLLECT -->
+        <div id="readyAlertBanner" class="alert alert-success rounded-4 shadow-sm border-0 p-3 p-md-4 mb-4 d-none" role="alert">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px; min-width: 52px;">
+                    <i class="bi bi-bell-fill fs-3"></i>
+                </div>
+                <div>
+                    <h5 class="alert-heading fw-bold mb-1">🎉 Food is Ready for Pickup!</h5>
+                    <p class="mb-0 small">Please proceed to Counter #1 and show your Token: <strong class="fs-6 text-dark" th:text="'#' + ${order.tokenNumber}">#0</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column: Stepper and Item Breakdown -->
+            <div class="col-lg-8">
+                <!-- Status Stepper Card -->
+                <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white mb-4">
+                    <!-- Order Header -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 border-bottom gap-2">
+                        <div>
+                            <span class="text-muted small fw-semibold">ORDER ID:</span>
+                            <h5 class="fw-bold mb-0 font-monospace text-dark" id="displayOrderNumber" th:text="${order.orderNumber}">ORD-XXXX</h5>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="livePollingPulse"></span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 fw-bold small" id="statusBadge" th:text="${order.orderStatus.displayName}">
+                                Order Placed
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Fluid Responsive Stepper (ORDERED -> PREPARING -> READY TO COLLECT -> DELIVERED) -->
+                    <div class="my-4 my-md-5">
+                        <div class="step-wizard" id="stepWizard">
+                            <div class="step-track-bg"></div>
+                            <div class="step-progress-bar" id="stepProgressBar" style="width: 0%;"></div>
+
+                            <!-- Step 1: ORDERED -->
+                            <div class="step-item" id="step-ORDERED">
+                                <div class="step-circle"><i class="bi bi-receipt"></i></div>
+                                <div class="step-label">1. Ordered</div>
+                            </div>
+
+                            <!-- Step 2: PREPARING -->
+                            <div class="step-item" id="step-PREPARING">
+                                <div class="step-circle"><i class="bi bi-fire"></i></div>
+                                <div class="step-label">2. Preparing</div>
+                            </div>
+
+                            <!-- Step 3: READY TO COLLECT -->
+                            <div class="step-item" id="step-READY_TO_COLLECT">
+                                <div class="step-circle"><i class="bi bi-bell-fill"></i></div>
+                                <div class="step-label">3. Ready</div>
+                            </div>
+
+                            <!-- Step 4: DELIVERED -->
+                            <div class="step-item" id="step-DELIVERED">
+                                <div class="step-circle"><i class="bi bi-check-circle-fill"></i></div>
+                                <div class="step-label">4. Delivered</div>
+                            </div>
+                        </div>
+
+                        <!-- Current Status Description Box -->
+                        <div class="text-center p-3 bg-light rounded-3 mt-4 border" id="statusDescriptionBox">
+                            <h6 class="fw-bold mb-1 text-dark" id="statusHeading">Order Placed in Kitchen</h6>
+                            <p class="text-muted small mb-0" id="statusSubtext">Your order details are recorded. Relax in class until preparation begins.</p>
+                        </div>
+                    </div>
+
+                    <!-- Cancellation Section -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 border-top gap-2" id="cancellationSection">
+                        <div class="text-muted small">
+                            <i class="bi bi-info-circle me-1"></i> You can cancel before cooking begins.
+                        </div>
+
+                        <form th:if="${order.canBeCancelled()}" th:action="@{/student/order/{id}/cancel(id=${order.id})}" method="post" id="cancelForm" onsubmit="return confirm('Cancel this order? Your payment will be marked refunded.');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold">
+                                <i class="bi bi-x-circle me-1"></i> Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Dishes Breakdown -->
+                <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 bg-white">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark">Ordered Items</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light small text-muted">
+                                <tr>
+                                    <th>Dish</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="orderItem : ${order.items}">
+                                    <td class="fw-bold text-dark small" th:text="${orderItem.itemName}">Dosa</td>
+                                    <td class="text-center small" th:text="${orderItem.quantity}">1</td>
+                                    <td class="text-end small text-muted" th:text="'₹' + ${orderItem.unitPrice}">₹60.00</td>
+                                    <td class="text-end fw-bold small text-dark" th:text="'₹' + ${orderItem.subtotal}">₹60.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="fw-bold text-end border-top pt-3 text-dark">Total Paid via UPI:</td>
+                                    <td class="fw-bold text-end border-top pt-3 fs-5 text-danger" th:text="'₹' + ${order.totalAmount}">₹0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Big Token Number & Student Info -->
+            <div class="col-lg-4">
+                <!-- Large Digital Token Card -->
+                <div class="token-card mb-4">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-1 small fw-bold text-uppercase">
+                        Pickup Token
+                    </span>
+                    <div class="token-big-number" th:text="'#' + ${order.tokenNumber}">#0</div>
+                    <div class="text-white-50 small">
+                        <i class="bi bi-clock me-1"></i> Ordered at <span th:text="${order.formattedOrderTime}">Time</span>
+                    </div>
+                </div>
+
+                <!-- Customer Details Card -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2 text-dark">Order & Student Details</h6>
+                    <ul class="list-unstyled small mb-0 space-y-2">
+                        <li class="d-flex justify-content-between py-1">
+                            <span class="text-muted">Student Name:</span>
+                            <span class="fw-bold text-dark" th:text="${order.customerName}">Rahul</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span class="text-muted">Roll Number:</span>
+                            <span class="fw-bold font-monospace text-dark" th:text="${order.studentRollNo}">21BD1A0501</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span class="text-muted">Mobile:</span>
+                            <span class="fw-semibold text-dark" th:text="${order.phone}">9876543210</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span class="text-muted">UPI Status:</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle" th:text="${order.paymentStatus.displayName}">PAID</span>
+                        </li>
+                        <li th:if="${order.payment != null}" class="d-flex justify-content-between py-1">
+                            <span class="text-muted">Transaction Ref:</span>
+                            <span class="fw-semibold font-monospace small text-truncate" style="max-width: 140px;" th:text="${order.payment.transactionRefNo}">TXN123</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Fast-Pass Information -->
+                <div class="card border-0 bg-primary-subtle border-primary-subtle rounded-4 p-3 text-center">
+                    <i class="bi bi-lightning-charge-fill text-primary fs-3 mb-1"></i>
+                    <h6 class="fw-bold text-primary mb-1">Queueless College Dining</h6>
+                    <p class="small text-muted mb-0">No waiting in line to purchase tokens. Simply wait for your token to show <strong>Ready</strong> and pick up your hot food!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-auto border-top">
+        <div class="container text-center text-muted small">
+            <p class="mb-1 text-white-50">VNR Vignana Jyothi Institute of Engineering & Technology &bull; Bachupally, Hyderabad</p>
+            <div class="d-flex justify-content-center gap-3 pt-1">
+                <a th:href="@{/download-app}" class="text-white-50 text-decoration-none opacity-75 hover-opacity-100">
+                    <i class="bi bi-android2 text-success me-1"></i> Android App
+                </a>
+                <span>&copy; VNR VJIET Canteen Express</span>
+                <a th:href="@{/canteen/login}" class="text-white-50 text-decoration-none opacity-75">
+                    <i class="bi bi-shield-lock me-1"></i> Staff Portal
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        const orderNumber = /*[[${order.orderNumber}]]*/ 'ORD-000';
+        let currentStatus = /*[[${order.orderStatus.name()}]]*/ 'ORDERED';
+        let alertSoundPlayed = false;
+
+        function playChime() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(587.33, now); // D5
+                osc.frequency.setValueAtTime(880, now + 0.15); // A5
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.6);
+            } catch (e) {
+                console.log("Audio play error", e);
+            }
+        }
+
+        function updateStepUI(status) {
+            currentStatus = status;
+            const steps = ['ORDERED', 'PREPARING', 'READY_TO_COLLECT', 'DELIVERED'];
+            const stepIndex = steps.indexOf(status);
+
+            const progressBar = document.getElementById('stepProgressBar');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusHeading = document.getElementById('statusHeading');
+            const statusSubtext = document.getElementById('statusSubtext');
+            const readyBanner = document.getElementById('readyAlertBanner');
+            const cancelSection = document.getElementById('cancellationSection');
+
+            if (status === 'CANCELLED') {
+                statusBadge.className = 'badge bg-danger rounded-pill px-3 py-2 fw-semibold';
+                statusBadge.textContent = 'Cancelled';
+                statusHeading.textContent = 'Order Cancelled';
+                statusSubtext.textContent = 'This order was cancelled. Any amount paid will be refunded.';
+                progressBar.style.width = '0%';
+                if (cancelSection) cancelSection.style.display = 'none';
+                return;
+            }
+
+            steps.forEach((s, idx) => {
+                const el = document.getElementById('step-' + s);
+                if (!el) return;
+                el.classList.remove('active', 'completed');
+                if (idx < stepIndex) {
+                    el.classList.add('completed');
+                } else if (idx === stepIndex) {
+                    el.classList.add('active');
+                }
+            });
+
+            // 0% -> 33% -> 66% -> 100% of the 75% track length
+            const progressPercentages = ['0%', '25%', '50%', '75%'];
+            if (stepIndex >= 0) {
+                progressBar.style.width = progressPercentages[stepIndex];
+            }
+
+            if (status === 'ORDERED') {
+                statusBadge.className = 'badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 fw-bold small';
+                statusBadge.textContent = 'Order Placed';
+                statusHeading.textContent = 'Order Placed in Kitchen';
+                statusSubtext.textContent = 'Your order is recorded in Oracle DB. Relax in class until preparation begins.';
+            } else if (status === 'PREPARING') {
+                statusBadge.className = 'badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-3 py-2 fw-bold small';
+                statusBadge.textContent = 'Preparing Food';
+                statusHeading.textContent = 'Chef is Cooking Your Food';
+                statusSubtext.textContent = 'Food is currently on the stove/oven. Cancellation is locked.';
+                if (cancelSection) cancelSection.style.display = 'none';
+            } else if (status === 'READY_TO_COLLECT') {
+                statusBadge.className = 'badge bg-success text-white rounded-pill px-3 py-2 fw-bold small';
+                statusBadge.textContent = 'Ready to Collect';
+                statusHeading.textContent = 'Hot & Ready for Pickup!';
+                statusSubtext.textContent = 'Please proceed to the counter to collect your meal.';
+                readyBanner.classList.remove('d-none');
+                if (cancelSection) cancelSection.style.display = 'none';
+
+                if (!alertSoundPlayed) {
+                    playChime();
+                    alertSoundPlayed = true;
+                }
+            } else if (status === 'DELIVERED') {
+                statusBadge.className = 'badge bg-secondary text-white rounded-pill px-3 py-2 fw-bold small';
+                statusBadge.textContent = 'Delivered & Completed';
+                statusHeading.textContent = 'Order Delivered';
+                statusSubtext.textContent = 'Enjoy your delicious meal! Have a great day ahead.';
+                readyBanner.classList.add('d-none');
+                if (cancelSection) cancelSection.style.display = 'none';
+                document.getElementById('livePollingPulse').style.display = 'none';
+            }
+        }
+
+        updateStepUI(currentStatus);
+
+        if (currentStatus !== 'DELIVERED' && currentStatus !== 'CANCELLED') {
+            const pollInterval = setInterval(() => {
+                fetch('/api/orders/' + encodeURIComponent(orderNumber) + '/status')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.status && data.status !== currentStatus) {
+                            updateStepUI(data.status);
+                        }
+                        if (data.status === 'DELIVERED' || data.status === 'CANCELLED') {
+                            clearInterval(pollInterval);
+                        }
+                    })
+                    .catch(err => console.log('Polling status error', err));
+            }, 3000);
+        }
+    </script>
+    <script th:src="@{/js/notifications.js}"></script>
+</body>
+</html>
