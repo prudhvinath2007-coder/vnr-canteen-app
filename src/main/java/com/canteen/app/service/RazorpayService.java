@@ -26,10 +26,10 @@ public class RazorpayService {
 
     private static final Logger log = LoggerFactory.getLogger(RazorpayService.class);
 
-    @Value("${razorpay.key.id:rzp_test_1DP5mmOlF5G5ag}")
+    @Value("${razorpay.key.id:rzp_test_TmeliJi1URF8Wg}")
     private String keyId;
 
-    @Value("${razorpay.key.secret:s9mQw9v0QZgK9XbZ8a8qZ9mQ}")
+    @Value("${razorpay.key.secret:zv76MIO2prHCYE1VfCBP2m28}")
     private String keySecret;
 
     @Value("${razorpay.company.name:VNR VJIET Canteen}")
