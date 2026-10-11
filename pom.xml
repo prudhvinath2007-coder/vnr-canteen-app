@@ -93,9 +93,9 @@
 
     <repositories>
         <repository>
-            <id>aliyun-maven</id>
-            <name>Aliyun Maven Central Mirror</name>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <id>google-maven-central</id>
+            <name>Google Maven Central Mirror</name>
+            <url>https://maven-central.storage-download.googleapis.com/maven2/</url>
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
@@ -109,9 +109,9 @@
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>aliyun-maven</id>
-            <name>Aliyun Maven Central Mirror</name>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <id>google-maven-central</id>
+            <name>Google Maven Central Mirror</name>
+            <url>https://maven-central.storage-download.googleapis.com/maven2/</url>
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </pluginRepository>
