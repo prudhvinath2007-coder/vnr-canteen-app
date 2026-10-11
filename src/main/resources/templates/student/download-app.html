@@ -61,10 +61,10 @@
                     </p>
 
                     <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-3">
-                        <button id="pwaInstallPageBtn" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow d-flex align-items-center gap-2">
-                            <i class="bi bi-phone-fill fs-5"></i>
-                            <span>Install App on Android (1-Tap)</span>
-                        </button>
+                        <a th:href="${downloadUrl}" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow d-flex align-items-center gap-2">
+                            <i class="bi bi-download fs-5"></i>
+                            <span>Download Standalone APK (v1.0.0)</span>
+                        </a>
 
                         <a th:href="@{/student/menu}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold d-flex align-items-center gap-2">
                             <i class="bi bi-arrow-right-circle"></i>
@@ -73,18 +73,18 @@
                     </div>
 
                     <div class="small text-white-50 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3">
-                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> No Parse Errors (Works on all Android versions)</span>
-                        <span><i class="bi bi-shield-check text-success me-1"></i> Verified & Safe</span>
-                        <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> UPI Pay: <code class="text-warning">6301599722@mbkns</code></span>
+                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> Standalone Native App</span>
+                        <span><i class="bi bi-shield-check text-success me-1"></i> Package: edu.vnrvjiet.canteen</span>
+                        <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> UPI Pay: <code class="text-warning">6301599722@ybl</code></span>
                     </div>
                 </div>
 
                 <!-- QR Code Download on Phone -->
                 <div class="col-lg-5 text-center">
                     <div class="bg-white text-dark p-4 rounded-4 shadow-sm d-inline-block text-center" style="max-width: 290px; width: 100%;">
-                        <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing: 0.5px;">Scan from Android Phone</div>
-                        <img th:if="${qrBase64 != null}" th:src="${qrBase64}" alt="App QR" class="img-fluid rounded-3 mb-2" style="width: 190px; height: 190px;">
-                        <p class="small text-muted mb-0" style="font-size: 0.75rem;">Point your phone camera here to open and install the app instantly.</p>
+                        <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing: 0.5px;">Direct APK Download QR</div>
+                        <img th:if="${qrBase64 != null}" th:src="${qrBase64}" alt="Download APK QR" class="img-fluid rounded-3 mb-2" style="width: 190px; height: 190px;">
+                        <p class="small text-muted mb-0" style="font-size: 0.75rem;">Scan with your Android phone to download the standalone APK directly.</p>
                     </div>
                 </div>
             </div>
@@ -133,15 +133,15 @@
             </div>
         </div>
 
-        <!-- 3-Step Instant Install Guide -->
+        <!-- 3-Step Standalone APK Install Guide -->
         <div class="card border-0 shadow-lg rounded-4 p-4 bg-white mb-4">
             <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-phone text-success"></i> How to Install on Android Without Any Errors
+                <i class="bi bi-android2 text-success"></i> How to Install the Standalone APK on Android
             </h5>
-            <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-center gap-3">
-                <i class="bi bi-info-circle-fill fs-4 text-primary flex-shrink-0"></i>
+            <div class="alert alert-success-subtle text-dark border-0 rounded-3 mb-4 d-flex align-items-center gap-3">
+                <i class="bi bi-shield-check fs-4 text-success flex-shrink-0"></i>
                 <div class="small">
-                    <strong>Tip:</strong> The app uses modern Progressive Web App (PWA) technology. You don't need to sideload unverified files that cause <em>"There was a problem parsing the package"</em> errors. Installing via Chrome takes 5 seconds, uses less than 1 MB, and installs directly to your home screen!
+                    <strong>Real Native App:</strong> This is a standalone Android Application Package (<code>.apk</code>) compiled for Android 8.0 through Android 14. Once installed, it sits directly in your Android App Drawer alongside all your native apps.
                 </div>
             </div>
 
@@ -150,8 +150,8 @@
                     <div class="d-flex align-items-start gap-3">
                         <div class="badge bg-success rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">1</div>
                         <div>
-                            <strong class="text-dark d-block mb-1">Open in Chrome Browser</strong>
-                            <p class="text-muted small mb-0">Open the canteen link in Google Chrome on your Android phone, or scan the QR code above.</p>
+                            <strong class="text-dark d-block mb-1">Download APK</strong>
+                            <p class="text-muted small mb-0">Tap the green <strong>"Download Standalone APK"</strong> button above or scan the QR code using your Android camera.</p>
                         </div>
                     </div>
                 </div>
@@ -160,8 +160,8 @@
                     <div class="d-flex align-items-start gap-3">
                         <div class="badge bg-success rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">2</div>
                         <div>
-                            <strong class="text-dark d-block mb-1">Tap Menu &rarr; Install App</strong>
-                            <p class="text-muted small mb-0">Tap the three dots <strong>(⋮)</strong> in the top right of Chrome and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</p>
+                            <strong class="text-dark d-block mb-1">Open & Allow Install</strong>
+                            <p class="text-muted small mb-0">Tap the downloaded <code>VNR-VJIET-Canteen.apk</code> from your notifications. If prompted by Android, tap <em>Settings &rarr; Allow from this source</em>.</p>
                         </div>
                     </div>
                 </div>
@@ -170,8 +170,8 @@
                     <div class="d-flex align-items-start gap-3">
                         <div class="badge bg-success rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">3</div>
                         <div>
-                            <strong class="text-dark d-block mb-1">Instant Native App Icon</strong>
-                            <p class="text-muted small mb-0">The <strong>VNR Canteen</strong> app will appear on your phone home screen! Open it for full-screen mode, chime notifications, and real UPI payments.</p>
+                            <strong class="text-dark d-block mb-1">Launch Native App</strong>
+                            <p class="text-muted small mb-0">Tap <strong>Install</strong>. Open <strong>VNR Canteen</strong> from your app drawer to start ordering with 1-tap UPI pay & Swiggy-style alerts!</p>
                         </div>
                     </div>
                 </div>
