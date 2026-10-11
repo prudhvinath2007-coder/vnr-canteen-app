@@ -90,7 +90,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Generate and record UPI payment details
-        upiPaymentService.createPaymentForOrder(savedOrder);
+        upiPaymentService.createPaymentForOrder(savedOrder, orderRequest.getUpiTransactionId());
 
         // Dispatch customized Swiggy-style notification to student
         String orderTitle = "🍕 Order Confirmed! (Token #" + savedOrder.getTokenNumber() + ")";

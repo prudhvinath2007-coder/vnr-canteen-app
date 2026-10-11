@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class UpiPaymentService {
 
-    @Value("${canteen.upi.id:6301599722@mbkns}")
+    @Value("${canteen.upi.id:BHARATHPE2LOUOH4C3E50129@unitype}")
     private String upiId;
 
     @Value("${canteen.upi.name:VNR VJIET Canteen}")
@@ -36,18 +36,18 @@ public class UpiPaymentService {
 
     /**
      * Builds standard NPCI UPI URI string accepted by all Indian UPI apps (PhonePe, Paytm, GPay, BHIM)
-     * Note: 'pa' must contain literal '@' (NOT %40 URL-encoded), and no 'tr' merchant ref for personal VPAs.
+     * Note: 'pa' must contain literal '@' (NOT %40 URL-encoded)
      */
     public String generateUpiUri(String orderNumber, BigDecimal amount) {
         return generateUpiUri(this.upiId, orderNumber, amount);
     }
 
     /**
-     * Builds standard NPCI UPI URI string for any given VPA (PhonePe @ybl, Paytm @paytm, GPay @okaxis, Mobikwik @mbkns)
+     * Builds standard NPCI UPI URI string for BharatPe Merchant VPA BHARATHPE2LOUOH4C3E50129@unitype
      */
     public String generateUpiUri(String customVpa, String orderNumber, BigDecimal amount) {
         String formattedAmount = (amount != null) ? String.format("%.2f", amount) : "0.00";
-        String cleanUpi = (customVpa != null && !customVpa.isBlank()) ? customVpa.trim() : (upiId != null ? upiId.trim() : "6301599722@ybl");
+        String cleanUpi = (customVpa != null && !customVpa.isBlank()) ? customVpa.trim() : (upiId != null ? upiId.trim() : "BHARATHPE2LOUOH4C3E50129@unitype");
         String cleanName = (payeeName != null) ? payeeName.trim() : "VNR VJIET Canteen";
 
         // Clean universal NPCI standard format
@@ -80,6 +80,10 @@ public class UpiPaymentService {
      * Creates and attaches a Payment record for an Order
      */
     public Payment createPaymentForOrder(Order order) {
+        return createPaymentForOrder(order, null);
+    }
+
+    public Payment createPaymentForOrder(Order order, String transactionRefNo) {
         String upiUri = generateUpiUri(order.getOrderNumber(), order.getTotalAmount());
         String qrBase64 = generateUpiQrBase64(upiUri, 280, 280);
 
@@ -89,7 +93,9 @@ public class UpiPaymentService {
         payment.setUpiId(upiId);
         payment.setAmount(order.getTotalAmount());
         payment.setPaymentStatus(PaymentStatus.PAID); // Auto-verified upon order submission in demo mode
-        payment.setTransactionRefNo("UPI-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        payment.setTransactionRefNo((transactionRefNo != null && !transactionRefNo.isBlank()) 
+                ? transactionRefNo.trim() 
+                : "UPI-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         payment.setPaymentTime(LocalDateTime.now());
         payment.setQrBase64(qrBase64);
 

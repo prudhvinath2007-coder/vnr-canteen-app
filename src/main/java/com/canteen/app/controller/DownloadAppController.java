@@ -34,11 +34,11 @@ public class DownloadAppController {
                 : String.format("%s://%s:%d", scheme, serverName, serverPort);
 
         String appUrl = baseUrl + "/student/menu";
-        String apkReleaseUrl = "https://github.com/prudhvinath2007-coder/vnr-canteen-app/releases/download/v1.0.0-apk/VNR-VJIET-Canteen.apk";
-        String qrBase64 = upiPaymentService.generateUpiQrBase64(apkReleaseUrl, 220, 220);
+        String downloadUrl = baseUrl + "/download/app";
+        String qrBase64 = upiPaymentService.generateUpiQrBase64(downloadUrl, 220, 220);
 
         model.addAttribute("appUrl", appUrl);
-        model.addAttribute("downloadUrl", apkReleaseUrl);
+        model.addAttribute("downloadUrl", downloadUrl);
         model.addAttribute("qrBase64", qrBase64);
         model.addAttribute("upiId", upiPaymentService.getUpiId());
 
@@ -46,10 +46,15 @@ public class DownloadAppController {
     }
 
     /**
-     * Direct APK file download endpoint
+     * Direct APK file download endpoint served directly by web app
      */
     @GetMapping("/download/app")
-    public String downloadApk() {
-        return "redirect:https://github.com/prudhvinath2007-coder/vnr-canteen-app/releases/download/v1.0.0-apk/VNR-VJIET-Canteen.apk";
+    public ResponseEntity<Resource> downloadApk() {
+        Resource apkResource = new ClassPathResource("static/downloads/VNR-VJIET-Canteen.apk");
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/vnd.android.package-archive"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"VNR-VJIET-Canteen.apk\"")
+                .body(apkResource);
     }
 }
