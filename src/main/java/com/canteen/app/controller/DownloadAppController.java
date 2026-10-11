@@ -33,9 +33,11 @@ public class DownloadAppController {
                 ? String.format("%s://%s", scheme, serverName)
                 : String.format("%s://%s:%d", scheme, serverName, serverPort);
 
+        String appUrl = baseUrl + "/student/menu";
         String downloadUrl = baseUrl + "/download/app";
-        String qrBase64 = upiPaymentService.generateUpiQrBase64(downloadUrl, 220, 220);
+        String qrBase64 = upiPaymentService.generateUpiQrBase64(appUrl, 220, 220);
 
+        model.addAttribute("appUrl", appUrl);
         model.addAttribute("downloadUrl", downloadUrl);
         model.addAttribute("qrBase64", qrBase64);
         model.addAttribute("upiId", upiPaymentService.getUpiId());

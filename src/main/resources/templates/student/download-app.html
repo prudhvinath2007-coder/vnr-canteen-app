@@ -61,30 +61,30 @@
                     </p>
 
                     <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-3">
-                        <a th:href="@{/download/app}" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow d-flex align-items-center gap-2">
-                            <i class="bi bi-download fs-5"></i>
-                            <span>Download APK (v1.0.0)</span>
-                        </a>
-
-                        <button id="pwaInstallPageBtn" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold d-flex align-items-center gap-2">
-                            <i class="bi bi-phone"></i>
-                            <span>Install Web App (PWA)</span>
+                        <button id="pwaInstallPageBtn" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow d-flex align-items-center gap-2">
+                            <i class="bi bi-phone-fill fs-5"></i>
+                            <span>Install App on Android (1-Tap)</span>
                         </button>
+
+                        <a th:href="@{/student/menu}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-right-circle"></i>
+                            <span>Open Campus Menu</span>
+                        </a>
                     </div>
 
                     <div class="small text-white-50 d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3">
-                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> Android 8.0+</span>
-                        <span><i class="bi bi-shield-check text-success me-1"></i> Verified Clean & Safe</span>
-                        <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> UPI Enabled: <code class="text-warning">6301599722@mbkns</code></span>
+                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> No Parse Errors (Works on all Android versions)</span>
+                        <span><i class="bi bi-shield-check text-success me-1"></i> Verified & Safe</span>
+                        <span><i class="bi bi-lightning-charge-fill text-warning me-1"></i> UPI Pay: <code class="text-warning">6301599722@mbkns</code></span>
                     </div>
                 </div>
 
                 <!-- QR Code Download on Phone -->
                 <div class="col-lg-5 text-center">
-                    <div class="bg-white text-dark p-4 rounded-4 shadow-sm d-inline-block text-center" style="max-width: 280px; width: 100%;">
+                    <div class="bg-white text-dark p-4 rounded-4 shadow-sm d-inline-block text-center" style="max-width: 290px; width: 100%;">
                         <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing: 0.5px;">Scan from Android Phone</div>
-                        <img th:if="${qrBase64 != null}" th:src="${qrBase64}" alt="Download QR" class="img-fluid rounded-3 mb-2" style="width: 190px; height: 190px;">
-                        <p class="small text-muted mb-0" style="font-size: 0.75rem;">Point your camera at this QR code to download the APK directly.</p>
+                        <img th:if="${qrBase64 != null}" th:src="${qrBase64}" alt="App QR" class="img-fluid rounded-3 mb-2" style="width: 190px; height: 190px;">
+                        <p class="small text-muted mb-0" style="font-size: 0.75rem;">Point your phone camera here to open and install the app instantly.</p>
                     </div>
                 </div>
             </div>
@@ -133,36 +133,45 @@
             </div>
         </div>
 
-        <!-- 3-Step Install Guide -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-            <h5 class="fw-bold text-dark mb-3">How to Install on Your Android Phone</h5>
+        <!-- 3-Step Instant Install Guide -->
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-white mb-4">
+            <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-phone text-success"></i> How to Install on Android Without Any Errors
+            </h5>
+            <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-center gap-3">
+                <i class="bi bi-info-circle-fill fs-4 text-primary flex-shrink-0"></i>
+                <div class="small">
+                    <strong>Tip:</strong> The app uses modern Progressive Web App (PWA) technology. You don't need to sideload unverified files that cause <em>"There was a problem parsing the package"</em> errors. Installing via Chrome takes 5 seconds, uses less than 1 MB, and installs directly to your home screen!
+                </div>
+            </div>
+
             <div class="row g-3">
                 <div class="col-md-4">
                     <div class="d-flex align-items-start gap-3">
-                        <div class="badge bg-danger rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">1</div>
+                        <div class="badge bg-success rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">1</div>
                         <div>
-                            <strong class="text-dark d-block mb-1">Download the APK</strong>
-                            <p class="text-muted small mb-0">Tap the green "Download APK" button above or scan the QR code using your phone camera.</p>
+                            <strong class="text-dark d-block mb-1">Open in Chrome Browser</strong>
+                            <p class="text-muted small mb-0">Open the canteen link in Google Chrome on your Android phone, or scan the QR code above.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="d-flex align-items-start gap-3">
-                        <div class="badge bg-danger rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">2</div>
+                        <div class="badge bg-success rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">2</div>
                         <div>
-                            <strong class="text-dark d-block mb-1">Allow Unknown Sources</strong>
-                            <p class="text-muted small mb-0">Open the downloaded file. If Android asks, tap <em>Settings &rarr; Allow from this source</em> to proceed.</p>
+                            <strong class="text-dark d-block mb-1">Tap Menu &rarr; Install App</strong>
+                            <p class="text-muted small mb-0">Tap the three dots <strong>(⋮)</strong> in the top right of Chrome and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="d-flex align-items-start gap-3">
-                        <div class="badge bg-danger rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">3</div>
+                        <div class="badge bg-success rounded-circle p-2 fs-6" style="width: 32px; height: 32px;">3</div>
                         <div>
-                            <strong class="text-dark d-block mb-1">Log in with VNR Roll No</strong>
-                            <p class="text-muted small mb-0">Launch the app, enter your VNR Roll Number, and start queueless food ordering with real UPI pay!</p>
+                            <strong class="text-dark d-block mb-1">Instant Native App Icon</strong>
+                            <p class="text-muted small mb-0">The <strong>VNR Canteen</strong> app will appear on your phone home screen! Open it for full-screen mode, chime notifications, and real UPI payments.</p>
                         </div>
                     </div>
                 </div>

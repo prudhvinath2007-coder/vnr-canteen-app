@@ -289,6 +289,17 @@
                 targetUrl = rawUri;
             }
 
+            if (targetApp === 'all') {
+                window.location.href = rawUri;
+                return;
+            }
+
+            // Direct intent try, with automatic fallback to universal NPCI upi:// URI
+            const fallbackTimer = setTimeout(() => {
+                window.location.href = rawUri;
+            }, 1500);
+
+            window.addEventListener('pagehide', () => clearTimeout(fallbackTimer), { once: true });
             window.location.href = targetUrl;
         }
 
