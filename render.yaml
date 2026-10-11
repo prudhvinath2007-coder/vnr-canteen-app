@@ -3,7 +3,7 @@ services:
     name: vnr-vjiet-canteen
     env: docker
     plan: free
-    region: oregon
+    region: singapore
     dockerfilePath: Dockerfile
     healthCheckPath: /student
     envVars:
