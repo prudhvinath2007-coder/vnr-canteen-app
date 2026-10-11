@@ -127,112 +127,194 @@
                             </div>
                         </div>
 
-                        <!-- Right Column: Dynamic UPI QR Code & 1-Tap App Payments -->
+                        <!-- Right Column: Dynamic UPI QR Code & Payment Modes -->
                         <div class="col-lg-6">
                             <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
-                                <h5 class="fw-bold mb-2 border-bottom pb-2 text-start text-dark d-flex align-items-center justify-content-between">
+                                <h5 class="fw-bold mb-3 border-bottom pb-2 text-start text-dark d-flex align-items-center justify-content-between">
                                     <span class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-wallet-fill text-danger"></i> Real UPI Payment
+                                        <i class="bi bi-wallet-fill text-danger"></i> Payment Options
                                     </span>
                                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">
                                         <i class="bi bi-shield-check me-1"></i> NPCI Verified
                                     </span>
                                 </h5>
 
+                                <!-- Hidden fields for payment details -->
                                 <input type="hidden" id="rawUpiUri" th:value="${upiUri}">
+                                <input type="hidden" id="cartTotalVal" th:value="${cartTotal}">
+                                <input type="hidden" id="selectedPaymentMethodInput" th:field="*{paymentMethod}" value="UPI">
+                                <input type="hidden" id="selectedVpaInput" th:field="*{selectedVpa}" value="6301599722@ybl">
 
-                                <!-- 1-Tap UPI App Buttons on Mobile & Android App -->
-                                <div class="mb-3 text-start">
-                                    <div class="small fw-bold text-muted mb-2 text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">
-                                        <i class="bi bi-phone me-1 text-danger"></i> 1-Tap Instant Pay with Apps:
-                                    </div>
-                                    <div class="row g-2">
-                                        <!-- PhonePe Button -->
-                                        <div class="col-6">
-                                            <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border" 
-                                                    style="background: #5f259f; color: #fff;" onclick="launchUpi('phonepe')">
-                                                <i class="bi bi-lightning-charge-fill text-warning"></i>
-                                                <span class="small">PhonePe</span>
-                                            </button>
-                                        </div>
-
-                                        <!-- Paytm Button -->
-                                        <div class="col-6">
-                                            <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border" 
-                                                    style="background: #002e6e; color: #fff;" onclick="launchUpi('paytm')">
-                                                <i class="bi bi-wallet2 text-info"></i>
-                                                <span class="small">Paytm UPI</span>
-                                            </button>
-                                        </div>
-
-                                        <!-- Google Pay Button -->
-                                        <div class="col-6">
-                                            <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border bg-dark text-white" 
-                                                    onclick="launchUpi('gpay')">
-                                                <i class="bi bi-google text-danger"></i>
-                                                <span class="small">Google Pay</span>
-                                            </button>
-                                        </div>
-
-                                        <!-- Generic / Any UPI App -->
-                                        <div class="col-6">
-                                            <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border btn-light text-dark" 
-                                                    onclick="launchUpi('all')">
-                                                <i class="bi bi-qr-code text-primary"></i>
-                                                <span class="small">Other UPI</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="position-relative my-2 text-center">
-                                    <hr class="text-muted">
-                                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted fw-semibold">OR SCAN QR CODE</span>
-                                </div>
-
-                                <!-- QR Display Card -->
-                                <div class="upi-qr-card mx-auto my-2 p-2 bg-light rounded-4 border d-inline-block">
-                                    <img th:if="${upiQrCode != null}" th:src="${upiQrCode}" alt="UPI QR Code" style="width: 190px; height: 190px;" class="img-fluid rounded-3">
-                                </div>
-
-                                <!-- UPI Details Breakdown -->
-                                <div class="bg-light rounded-3 p-3 text-start small mb-3 border">
-                                    <div class="d-flex justify-content-between align-items-center py-1">
-                                        <span class="text-muted">Canteen UPI ID:</span>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="fw-bold font-monospace text-danger" id="canteenUpiIdText" th:text="${upiId}">6301599722@mbkns</span>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm p-1 py-0 rounded" style="font-size: 0.7rem;" onclick="copyUpiId()" title="Copy UPI ID">
-                                                <i class="bi bi-clipboard"></i> Copy
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between py-1">
-                                        <span class="text-muted">Payee Name:</span>
-                                        <span class="fw-semibold text-dark" th:text="${payeeName}">VNR VJIET Canteen</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between py-1 border-top mt-1 pt-1">
-                                        <span class="text-muted">Total Payable:</span>
-                                        <span class="fw-bold text-success fs-6" th:text="'₹' + ${cartTotal}">₹0.00</span>
-                                    </div>
-                                </div>
-
-                                <!-- Transaction Ref (UTR) -->
-                                <div class="mb-3 text-start">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <label class="form-label small fw-bold text-dark mb-0">UPI Transaction Ref / UTR</label>
-                                        <button type="button" class="btn btn-link p-0 text-decoration-none small" style="font-size: 0.72rem;" onclick="fillDemoUtr()">
-                                            <i class="bi bi-magic text-warning me-1"></i> Quick-Fill Demo UTR
+                                <!-- Payment Tabs: UPI vs Cash at Counter -->
+                                <ul class="nav nav-pills nav-fill mb-3 bg-light p-1 rounded-3 small fw-bold" id="paymentTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active rounded-pill py-2 text-dark" id="tab-upi-btn" type="button" onclick="switchPaymentMode('UPI')">
+                                            <i class="bi bi-qr-code me-1 text-danger"></i> UPI App / QR Pay
                                         </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link rounded-pill py-2 text-dark" id="tab-cash-btn" type="button" onclick="switchPaymentMode('CASH_AT_COUNTER')">
+                                            <i class="bi bi-cash-stack me-1 text-success"></i> Pay at Counter
+                                        </button>
+                                    </li>
+                                </ul>
+
+                                <!-- UPI Panel Content -->
+                                <div id="upiPaymentPanel">
+                                    <!-- VPA Selector (Resolves "Payment not supported for this receiver VPA") -->
+                                    <div class="text-start mb-3">
+                                        <label class="small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
+                                            <span>Select UPI ID to Pay:</span>
+                                            <span class="badge bg-primary-subtle text-primary fw-normal" style="font-size: 0.68rem;">Tap to Switch</span>
+                                        </label>
+                                        
+                                        <!-- Quick VPA Pills -->
+                                        <div class="d-flex flex-wrap gap-1 mb-2" id="vpaPillContainer">
+                                            <button type="button" class="btn btn-sm btn-outline-primary active rounded-pill px-2 py-1 fw-semibold small vpa-btn" 
+                                                    data-vpa="6301599722@ybl" onclick="selectVpa('6301599722@ybl', this)">
+                                                🟣 PhonePe (@ybl)
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 fw-semibold small vpa-btn" 
+                                                    data-vpa="6301599722@paytm" onclick="selectVpa('6301599722@paytm', this)">
+                                                🔵 Paytm (@paytm)
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 fw-semibold small vpa-btn" 
+                                                    data-vpa="6301599722@okaxis" onclick="selectVpa('6301599722@okaxis', this)">
+                                                🟢 GPay (@okaxis)
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1 fw-semibold small vpa-btn" 
+                                                    data-vpa="6301599722@mbkns" onclick="selectVpa('6301599722@mbkns', this)">
+                                                🟠 Mobikwik (@mbkns)
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1 fw-semibold small vpa-btn" 
+                                                    onclick="toggleCustomVpa()">
+                                                ✏️ Custom UPI ID
+                                            </button>
+                                        </div>
+
+                                        <!-- Custom VPA Input (Hidden by default) -->
+                                        <div id="customVpaBox" class="input-group input-group-sm mb-2 d-none">
+                                            <input type="text" id="customVpaInput" class="form-control" placeholder="Enter your UPI ID (e.g. mobile@upi)">
+                                            <button class="btn btn-danger" type="button" onclick="applyCustomVpa()">Apply</button>
+                                        </div>
+
+                                        <!-- Helper Alert -->
+                                        <div class="alert alert-warning-subtle text-dark border-0 rounded-3 py-1 px-2 small mb-0 d-flex align-items-center gap-2" style="font-size: 0.73rem;">
+                                            <i class="bi bi-info-circle-fill text-warning flex-shrink-0"></i>
+                                            <span>If an app shows <em>"Payment not supported for this receiver VPA"</em>, tap <strong>PhonePe (@ybl)</strong> or <strong>Paytm (@paytm)</strong> above.</span>
+                                        </div>
                                     </div>
-                                    <input type="text" id="upiTxnInput" th:field="*{upiTransactionId}" class="form-control bg-light small" placeholder="e.g. 12-digit UTR (optional for cash counters)">
-                                    <div class="form-text small text-muted" style="font-size: 0.72rem;">Available in PhonePe / Paytm / GPay transaction receipt.</div>
+
+                                    <!-- 1-Tap UPI App Buttons on Mobile & Android App -->
+                                    <div class="mb-3 text-start">
+                                        <div class="small fw-bold text-muted mb-2 text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+                                            <i class="bi bi-phone me-1 text-danger"></i> 1-Tap Instant Pay with Apps:
+                                        </div>
+                                        <div class="row g-2">
+                                            <!-- PhonePe Button -->
+                                            <div class="col-6">
+                                                <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border" 
+                                                        style="background: #5f259f; color: #fff;" onclick="launchUpi('phonepe')">
+                                                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                                    <span class="small">PhonePe</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Paytm Button -->
+                                            <div class="col-6">
+                                                <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border" 
+                                                        style="background: #002e6e; color: #fff;" onclick="launchUpi('paytm')">
+                                                    <i class="bi bi-wallet2 text-info"></i>
+                                                    <span class="small">Paytm UPI</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Google Pay Button -->
+                                            <div class="col-6">
+                                                <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border bg-dark text-white" 
+                                                        onclick="launchUpi('gpay')">
+                                                    <i class="bi bi-google text-danger"></i>
+                                                    <span class="small">Google Pay</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Generic / Any UPI App -->
+                                            <div class="col-6">
+                                                <button type="button" class="btn w-100 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 border btn-light text-dark" 
+                                                        onclick="launchUpi('all')">
+                                                    <i class="bi bi-qr-code text-primary"></i>
+                                                    <span class="small">Other UPI</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="position-relative my-2 text-center">
+                                        <hr class="text-muted">
+                                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted fw-semibold">OR SCAN QR CODE</span>
+                                    </div>
+
+                                    <!-- QR Display Card -->
+                                    <div class="upi-qr-card mx-auto my-2 p-2 bg-light rounded-4 border d-inline-block position-relative">
+                                        <img id="upiQrImage" th:src="${upiQrCode}" alt="UPI QR Code" style="width: 190px; height: 190px;" class="img-fluid rounded-3">
+                                        <div id="qrLoadingSpinner" class="position-absolute top-50 start-50 translate-middle d-none">
+                                            <div class="spinner-border text-danger" role="status"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- UPI Details Breakdown -->
+                                    <div class="bg-light rounded-3 p-3 text-start small mb-3 border">
+                                        <div class="d-flex justify-content-between align-items-center py-1">
+                                            <span class="text-muted">Active UPI ID:</span>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="fw-bold font-monospace text-danger" id="canteenUpiIdText">6301599722@ybl</span>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm p-1 py-0 rounded" style="font-size: 0.7rem;" onclick="copyUpiId()" title="Copy UPI ID">
+                                                    <i class="bi bi-clipboard"></i> Copy
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1">
+                                            <span class="text-muted">Payee Name:</span>
+                                            <span class="fw-semibold text-dark" th:text="${payeeName}">VNR VJIET Canteen</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 border-top mt-1 pt-1">
+                                            <span class="text-muted">Total Payable:</span>
+                                            <span class="fw-bold text-success fs-6" th:text="'₹' + ${cartTotal}">₹0.00</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Transaction Ref (UTR) -->
+                                    <div class="mb-3 text-start">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label small fw-bold text-dark mb-0">UPI Transaction Ref / UTR</label>
+                                            <button type="button" class="btn btn-link p-0 text-decoration-none small" style="font-size: 0.72rem;" onclick="fillDemoUtr()">
+                                                <i class="bi bi-magic text-warning me-1"></i> Quick-Fill Demo UTR
+                                            </button>
+                                        </div>
+                                        <input type="text" id="upiTxnInput" th:field="*{upiTransactionId}" class="form-control bg-light small" placeholder="e.g. 12-digit UTR (optional for quick testing)">
+                                        <div class="form-text small text-muted" style="font-size: 0.72rem;">Found in PhonePe / Paytm / GPay transaction receipt.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Cash at Counter Panel (Hidden by default) -->
+                                <div id="cashPaymentPanel" class="d-none text-start p-3 bg-light rounded-4 border mb-3">
+                                    <div class="text-center py-3">
+                                        <div class="rounded-circle bg-success-subtle text-success d-inline-flex p-3 mb-2">
+                                            <i class="bi bi-cash-stack fs-1"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-dark">Pay Directly at Canteen Counter</h6>
+                                        <p class="text-muted small mb-3">Place your order now to get your Token Number immediately. Pay <strong class="text-dark" th:text="'₹' + ${cartTotal}">₹0</strong> in cash or student card at Counter #1 when your food is ready!</p>
+                                        <div class="badge bg-success-subtle text-success p-2 px-3 rounded-pill fw-semibold">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Queueless Kitchen Token Assigned
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="d-grid gap-2 mt-auto">
                                     <!-- Submit & Confirm Button -->
                                     <button type="submit" id="submitOrderBtn" class="btn btn-danger btn-lg rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2">
                                         <i class="bi bi-check2-circle fs-5"></i>
-                                        <span>Confirm Payment & Place Order</span>
+                                        <span id="submitOrderBtnText">Confirm Payment & Place Order</span>
                                     </button>
                                 </div>
                             </div>
@@ -321,6 +403,88 @@
             document.getElementById('upiTxnInput').value = randomUtr;
         }
 
+        // Switch between UPI and Cash-at-Counter modes
+        function switchPaymentMode(mode) {
+            const upiPanel = document.getElementById('upiPaymentPanel');
+            const cashPanel = document.getElementById('cashPaymentPanel');
+            const upiTab = document.getElementById('tab-upi-btn');
+            const cashTab = document.getElementById('tab-cash-btn');
+            const methodInput = document.getElementById('selectedPaymentMethodInput');
+            const submitBtnText = document.getElementById('submitOrderBtnText');
+
+            if (mode === 'CASH_AT_COUNTER') {
+                upiPanel.classList.add('d-none');
+                cashPanel.classList.remove('d-none');
+                cashTab.classList.add('active');
+                upiTab.classList.remove('active');
+                methodInput.value = 'CASH_AT_COUNTER';
+                submitBtnText.textContent = 'Place Order (Pay ₹' + document.getElementById('cartTotalVal').value + ' at Counter)';
+            } else {
+                cashPanel.classList.add('d-none');
+                upiPanel.classList.remove('d-none');
+                upiTab.classList.add('active');
+                cashTab.classList.remove('active');
+                methodInput.value = 'UPI';
+                submitBtnText.textContent = 'Confirm Payment & Place Order';
+            }
+        }
+
+        // Dynamically select and switch UPI VPA (PhonePe @ybl, Paytm @paytm, GPay @okaxis, Mobikwik @mbkns)
+        function selectVpa(vpa, btnElement) {
+            if (!vpa) return;
+
+            // Update UI pill active states
+            document.querySelectorAll('.vpa-btn').forEach(btn => {
+                btn.classList.remove('btn-primary', 'active');
+                btn.classList.add('btn-outline-primary');
+            });
+            if (btnElement) {
+                btnElement.classList.remove('btn-outline-primary');
+                btnElement.classList.add('btn-primary', 'active');
+            }
+
+            document.getElementById('canteenUpiIdText').textContent = vpa;
+            document.getElementById('selectedVpaInput').value = vpa;
+
+            // Fetch dynamic QR code from server
+            const total = document.getElementById('cartTotalVal').value;
+            const spinner = document.getElementById('qrLoadingSpinner');
+            if (spinner) spinner.classList.remove('d-none');
+
+            fetch('/api/orders/upi/qr?vpa=' + encodeURIComponent(vpa) + '&amount=' + encodeURIComponent(total))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.qrBase64) {
+                        document.getElementById('upiQrImage').src = data.qrBase64;
+                    }
+                    if (data.upiUri) {
+                        document.getElementById('rawUpiUri').value = data.upiUri;
+                    }
+                })
+                .catch(err => console.error('Failed to load dynamic QR:', err))
+                .finally(() => {
+                    if (spinner) spinner.classList.add('d-none');
+                });
+        }
+
+        function toggleCustomVpa() {
+            const box = document.getElementById('customVpaBox');
+            box.classList.toggle('d-none');
+            if (!box.classList.contains('d-none')) {
+                document.getElementById('customVpaInput').focus();
+            }
+        }
+
+        function applyCustomVpa() {
+            const customVal = document.getElementById('customVpaInput').value.trim();
+            if (!customVal || !customVal.includes('@')) {
+                alert('Please enter a valid UPI ID (e.g. yourname@ybl or mobile@paytm)');
+                return;
+            }
+            selectVpa(customVal, null);
+            document.getElementById('customVpaBox').classList.add('d-none');
+        }
+
         // Native Android App Activity Result Callback
         window.onUpiPaymentSuccess = function(txnId) {
             if (txnId) {
@@ -329,6 +493,11 @@
             const submitBtn = document.getElementById('submitOrderBtn');
             if (submitBtn) submitBtn.click();
         };
+
+        // Initialize default VPA on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            selectVpa('6301599722@ybl', document.querySelector('.vpa-btn[data-vpa="6301599722@ybl"]'));
+        });
     </script>
 </body>
 </html>

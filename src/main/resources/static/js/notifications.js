@@ -44,6 +44,11 @@
             gain2.connect(ctx.destination);
             osc2.start(now + 0.15);
             osc2.stop(now + 0.6);
+
+            // Mobile haptic vibration feedback like Swiggy
+            if (navigator.vibrate) {
+                navigator.vibrate(type === 'READY' ? [300, 100, 300, 100, 400] : [150, 50, 150]);
+            }
         } catch (e) {
             console.debug('Audio chime skipped:', e);
         }

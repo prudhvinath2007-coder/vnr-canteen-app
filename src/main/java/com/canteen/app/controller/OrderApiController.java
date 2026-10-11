@@ -8,14 +8,36 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+import com.canteen.app.service.UpiPaymentService;
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderApiController {
 
     private final OrderService orderService;
+    private final UpiPaymentService upiPaymentService;
 
-    public OrderApiController(OrderService orderService) {
+    public OrderApiController(OrderService orderService, UpiPaymentService upiPaymentService) {
         this.orderService = orderService;
+        this.upiPaymentService = upiPaymentService;
+    }
+
+    /**
+     * Dynamic UPI QR endpoint for switching VPAs in real time
+     */
+    @GetMapping("/upi/qr")
+    public ResponseEntity<?> getDynamicUpiQr(
+            @RequestParam(value = "vpa", required = false) String vpa,
+            @RequestParam(value = "amount", required = false) BigDecimal amount,
+            @RequestParam(value = "orderNumber", required = false) String orderNumber) {
+        String upiUri = upiPaymentService.generateUpiUri(vpa, orderNumber, amount);
+        String qrBase64 = upiPaymentService.generateUpiQrBase64(upiUri, 260, 260);
+        return ResponseEntity.ok(Map.of(
+                "upiUri", upiUri,
+                "qrBase64", qrBase64 != null ? qrBase64 : "",
+                "vpa", vpa != null && !vpa.isBlank() ? vpa : upiPaymentService.getUpiId()
+        ));
     }
 
     /**

@@ -17,6 +17,10 @@ public class OrderRequestDto {
 
     private String upiTransactionId; // UTR entered by user during payment confirmation
 
+    private String paymentMethod = "UPI"; // "UPI" or "CASH_AT_COUNTER"
+
+    private String selectedVpa; // The specific UPI VPA used for payment
+
     public OrderRequestDto() {}
 
     public String getCustomerName() {
@@ -57,5 +61,21 @@ public class OrderRequestDto {
 
     public void setUpiTransactionId(String upiTransactionId) {
         this.upiTransactionId = upiTransactionId;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getSelectedVpa() {
+        return selectedVpa;
+    }
+
+    public void setSelectedVpa(String selectedVpa) {
+        this.selectedVpa = selectedVpa;
     }
 }

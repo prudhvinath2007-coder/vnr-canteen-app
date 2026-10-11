@@ -39,8 +39,15 @@ public class UpiPaymentService {
      * Note: 'pa' must contain literal '@' (NOT %40 URL-encoded), and no 'tr' merchant ref for personal VPAs.
      */
     public String generateUpiUri(String orderNumber, BigDecimal amount) {
+        return generateUpiUri(this.upiId, orderNumber, amount);
+    }
+
+    /**
+     * Builds standard NPCI UPI URI string for any given VPA (PhonePe @ybl, Paytm @paytm, GPay @okaxis, Mobikwik @mbkns)
+     */
+    public String generateUpiUri(String customVpa, String orderNumber, BigDecimal amount) {
         String formattedAmount = (amount != null) ? String.format("%.2f", amount) : "0.00";
-        String cleanUpi = (upiId != null) ? upiId.trim() : "6301599722@mbkns";
+        String cleanUpi = (customVpa != null && !customVpa.isBlank()) ? customVpa.trim() : (upiId != null ? upiId.trim() : "6301599722@ybl");
         String cleanName = (payeeName != null) ? payeeName.trim() : "VNR VJIET Canteen";
 
         // Clean universal NPCI standard format

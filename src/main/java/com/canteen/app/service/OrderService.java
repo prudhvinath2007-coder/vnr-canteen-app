@@ -84,18 +84,24 @@ public class OrderService {
         }
 
         order.setTotalAmount(total);
-        order.setPaymentStatus(PaymentStatus.PAID);
+        boolean isCashAtCounter = "CASH_AT_COUNTER".equalsIgnoreCase(orderRequest.getPaymentMethod());
+        order.setPaymentStatus(isCashAtCounter ? PaymentStatus.PENDING : PaymentStatus.PAID);
 
         Order savedOrder = orderRepository.save(order);
 
         // Generate and record UPI payment details
         upiPaymentService.createPaymentForOrder(savedOrder);
 
-        // Dispatch notification to student
+        // Dispatch customized Swiggy-style notification to student
+        String orderTitle = "🍕 Order Confirmed! (Token #" + savedOrder.getTokenNumber() + ")";
+        String orderMsg = isCashAtCounter 
+                ? "VNR Kitchen has received your order! Token #" + savedOrder.getTokenNumber() + ". Pay ₹" + savedOrder.getTotalAmount() + " at Counter when collecting."
+                : "VNR Kitchen has received your order! Sit back in class, our chefs are getting the pans hot 🍳 (Token #" + savedOrder.getTokenNumber() + ")";
+
         notificationService.sendNotification(
                 savedOrder.getStudentRollNo(),
-                "Order #" + savedOrder.getTokenNumber() + " Placed",
-                "Your order has been sent to the kitchen. Token #" + savedOrder.getTokenNumber(),
+                orderTitle,
+                orderMsg,
                 "ORDERED",
                 savedOrder.getOrderNumber(),
                 savedOrder.getTokenNumber()
@@ -148,8 +154,8 @@ public class OrderService {
             order.setPreparationStartTime(now);
             notificationService.sendNotification(
                     order.getStudentRollNo(),
-                    "Token #" + order.getTokenNumber() + " in Preparation",
-                    "Chef has started cooking your order in the kitchen!",
+                    "👨‍🍳 Sizzling in the Pan! (Token #" + order.getTokenNumber() + ")",
+                    "Chef has started cooking your food fresh in the kitchen! The aroma is rising 🥘",
                     "PREPARING",
                     order.getOrderNumber(),
                     order.getTokenNumber()
@@ -158,8 +164,8 @@ public class OrderService {
             order.setReadyTime(now);
             notificationService.sendNotification(
                     order.getStudentRollNo(),
-                    "🔔 Token #" + order.getTokenNumber() + " Ready to Collect!",
-                    "Your food is hot & ready! Please collect from Counter #1 with Token #" + order.getTokenNumber(),
+                    "🔔 Ding! Token #" + order.getTokenNumber() + " Hot & Ready!",
+                    "Steaming hot meal waiting at Counter #1! Skip the queue, flash Token #" + order.getTokenNumber() + " & enjoy 😋",
                     "READY",
                     order.getOrderNumber(),
                     order.getTokenNumber()
@@ -168,8 +174,8 @@ public class OrderService {
             order.setDeliveryTime(now);
             notificationService.sendNotification(
                     order.getStudentRollNo(),
-                    "Order #" + order.getTokenNumber() + " Delivered",
-                    "Order completed. Thank you for dining at VNR VJIET Canteen!",
+                    "✨ Food Collected! Bon Appétit!",
+                    "Token #" + order.getTokenNumber() + " delivered. Hope every bite is delicious! See you soon ❤️",
                     "DELIVERED",
                     order.getOrderNumber(),
                     order.getTokenNumber()
